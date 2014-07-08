@@ -1,0 +1,38 @@
+﻿@using Web.Code.Common
+@using Web.Code.Common.Extensions
+
+<!DOCTYPE html>
+<html >
+	<head>
+		<link href="@Url.ContentWithVersion("~/favicon.ico")" rel="shortcut icon" />
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>@ViewBag.Title - Pushpay API</title>
+		<link href="@Url.ContentWithVersion("~/Content/base.min.css")" rel="stylesheet" type="text/css" />
+		<script src="@Url.ContentWithVersion("~/scripts/jquery-2.1.1.min.js")"  ></script>
+		<script src="@Url.ContentWithVersion("~/scripts/lib.js")"  ></script>
+	</head>
+	<body class="">
+		@RenderSection("BodyOpening", false)
+		<div class="page-con">
+			@RenderSection("MainMenu", false)
+			
+
+
+
+			<div class="container">
+				@RenderBody()
+			</div>
+	
+
+		</div>
+	</body>
+
+	<script>
+		$(document).ready(function() {
+			Lib.InitializePage();
+		});
+	</script>
+
+</html>
+	

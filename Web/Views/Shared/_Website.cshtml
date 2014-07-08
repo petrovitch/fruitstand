@@ -1,0 +1,39 @@
+﻿@using Web.Code.Common
+@using Web.Code.Common.Extensions
+@{
+	Layout = "~/views/shared/_Empty.cshtml";
+}
+
+@section BodyOpening
+{
+	@{ Html.RenderAction("APILogViewer", "Home"); }
+}
+
+@section MainMenu
+{
+	<div class="container container-full-width-header">
+				<div class="main-header">
+						
+					<a href="/" class="logo">
+							
+					</a>
+
+					<div class="nav main-nav">
+
+						<ul class="menu">
+							<li><a href="/">Home</a></li>
+							<li><a href="@Url.Action("BrowseProducts", "Home")">Shop</a></li>
+						</ul>	
+
+						<ul class="menu sub-menu">
+							<li>
+								<a class="icon person-details toggle-developer-mode">Developer Console</a>
+							</li>
+						</ul>	
+					</div>
+				</div>
+			</div>
+}
+
+@RenderBody();
+	

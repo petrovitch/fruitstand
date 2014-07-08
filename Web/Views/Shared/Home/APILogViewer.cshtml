@@ -1,0 +1,161 @@
+﻿@model Web.Models.Home.APILogViewerModel
+@using Web.Code.Common.Extensions
+@using Web.Code.Common.Extensions
+<div id="@Model.UniqueID" class="log-viewer-con">
+
+	<div class="toggle-developer-mode">Show</div>	
+	<div class="rpt-head">
+		<h2>Developer console</h2>
+
+		<a class="icon refresh" id="BtnNewWindow">New window</a>
+	</div>
+	<p class="intro">
+		The developer console is designed to show developers exactly how we are using the Pushpay API, by showing all requests and responses between the two.
+		Just use the site as usual and keep an eye on the panel below.
+	</p>
+<div class="requests-con">
+	<div id="PHLogMessages"></div>
+</div>
+</div>
+
+<script src="@Url.ContentWithVersion("~/scripts/jquery.signalR-2.1.0.min.js")"  ></script>
+<script src="@Url.ContentWithVersion("~/signalr/hubs")"  ></script>
+<script src="@Url.ContentWithVersion("~/scripts/messagebroadcaster.js")"  ></script>
+<script>
+	/*
+	APILogViewer
+		Listens to API events from our server and displays them on-screen so that developers may understand what is going on with the API
+	*/
+	var APILogViewer = function(containerSelector, model) {
+		var $con = $(containerSelector),
+			$PHLogMessages = $con.find('#PHLogMessages'),
+			
+			Init = function() {
+				MessageBroadcaster.Subscribe('APIRequestSent', OnRequestSending);
+				MessageBroadcaster.Subscribe('APIResponseReceived', OnResponseReceived);
+				MessageBroadcaster.Subscribe('APIError', OnError);
+
+				$con.on('click', '#BtnNewWindow', OpenWindow);
+	
+				// Allow user to expand JSON objects by clicking on them
+				$con.on('click', '.expandable .property-name', function() {
+					var $parent = $(this).parents('.expandable').eq(0);
+					$parent.toggleClass('expanded');
+				});
+			},
+			OpenWindow = function() {
+				var url = '/home/developerconsole';
+				var popup = window.open(url, 'developerconsole', 'top=100,left=100,width=600,height=600');
+			},
+			OnRequestSending = function(details) {
+				// Create an HTML template to show the details
+				var $div = $('<div><div class="header"><span class="title">Sending API Request</span></div></div>');
+				var $header = $div.find('.header');
+				var $fields = $('<fieldset class="small horiz"></fieldset>');
+				$div.append($fields);
+
+				var fn_addfield = function(label, content) {
+					var $dl = $('<dl></dl');
+					$dl.append($('<dt></dt>').html(label));
+					$dl.append($('<dd></dd>').html(content));
+					$fields.append($dl);
+				};
+
+				fn_addfield('URL', details.FullUrl);
+				fn_addfield('Method', details.Method);
+				if (details.SerializedContent != '') {
+					var $btnRaw = $('<a class="icon preview ">Raw JSON</a>');
+					$header.append($btnRaw);
+					$btnRaw.click(function() {
+						console.log(details.SerializedContent);
+						alert(details.SerializedContent);
+					});
+					
+					var $btnToggleAll = $('<a class="icon refresh">Expand/collapse all</a>');
+					$header.append($btnToggleAll);
+					$btnToggleAll.click(function() {
+						if ($(this).hasClass('all-expanded')) {
+							$div.find('.expanded').removeClass('expanded');
+						} else {
+							$div.find('.expandable').addClass('expanded');
+						}
+						$(this).toggleClass('all-expanded');
+					});
+					
+					$div.append(Lib.FormatJson(details.SerializedContent, 'Request body'));	
+				}
+				
+				
+				ShowLogMessage($div);
+			},
+			OnResponseReceived = function(rawResponse) {
+				var $div = $('<div></div>');
+
+				var $header = $('<div class="header"><span class="title">API Response Received</span></div>');
+				$div.append($header);
+				
+				// Button to view raw JSON
+				var $btnRaw = $('<a class="icon preview">Raw JSON</a>');
+				$header.append($btnRaw);
+				$btnRaw.click(function() {
+					console.log(rawResponse);
+					alert(rawResponse);
+				});
+				
+				var $btnToggleAll = $('<a class="icon refresh">Expand/collapse all</a>');
+				$header.append($btnToggleAll);
+				$btnToggleAll.click(function() {
+					if ($(this).hasClass('all-expanded')) {
+						$div.find('.expanded').removeClass('expanded');
+					} else {
+						$div.find('.expandable').addClass('expanded');
+					}
+					$(this).toggleClass('all-expanded');
+				});
+				
+				
+				// Format nice JSON object
+				var jsonFormatted = Lib.FormatJson(rawResponse, 'Response body');
+				$div.append(jsonFormatted);
+				ShowLogMessage($div);
+
+			},
+			ShowLogMessage = function($elementToShow) {
+				$elementToShow.hide().addClass('request-details-con');
+				$PHLogMessages.prepend($elementToShow);
+				$elementToShow.slideDown();
+			},
+
+			OnError = function(msg) {
+				console.error("API error", msg);
+				var $div = $('<div></div>').addClass('error small');
+
+				// Format message - strip HTMl from it too
+				var isTruncated = false;
+				var summary = $('<div></div>').html(msg.Message).text();
+				if (summary.length > 200) {
+					summary = summary.substring(0, 200) + '...';
+					isTruncated = true;
+				}
+				$div.append(summary);
+
+				// More infO?
+				if (isTruncated) {
+					var $btn = $('<a></a>').html('more...');
+					$btn.click(function() {
+						alert(msg.Message);
+					});
+					$div.append($btn);
+				}
+
+				ShowLogMessage($div);
+			};
+		return {
+			Init: Init
+		};
+	};
+
+	var viewer = new APILogViewer('#@Model.UniqueID', @Html.ToJSON(Model));
+	viewer.Init();
+</script>
+	

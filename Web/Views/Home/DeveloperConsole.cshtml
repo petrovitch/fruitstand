@@ -1,0 +1,8 @@
+﻿@{
+    Layout = "~/views/shared/_empty.cshtml";
+	ViewBag.Title = "Developer Console";
+}
+
+<div class="developer-console-window" >
+	@{ Html.RenderAction("APILogViewer", "Home"); }
+</div>

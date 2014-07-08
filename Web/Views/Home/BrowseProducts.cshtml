@@ -1,0 +1,223 @@
+﻿@using Web.Code.Common.Extensions
+@model Web.Models.Home.BrowseProductsModel
+@{
+    Layout = "~/views/shared/_website.cshtml";
+	ViewBag.Title = "Add products to your cart";
+}
+
+<div id="@Model.UniqueID">
+	
+	<h1 class="step"><span>1</span>Please select a merchant</h1>
+	<fieldset class=" half-width">
+		<dl>
+			<dt>Merchant
+			<a class="icon refresh loadable" id="BtnRefreshMerchants">Refresh merchant list</a>
+			</dt>
+			<dd>
+				<select id="MerchantList"></select>
+				
+			</dd>
+		</dl>
+	</fieldset>
+	
+	<div id="PHProducts" style="display:none;">
+	<h1 class="step"><span>2</span>What would you like to buy?</h1>
+
+		<div class="product-list-con">
+			@foreach (var product in Model.Products)
+			{
+				<div class="product-item-con" data-product-id="@product.ProductID">
+					<div class="actions-con">
+						<h4>Your price: </h4>
+						<span id="LblPrice"></span>
+					</div>
+
+					<div class="actions-con">
+						<h4>Quantity: </h4>
+						<input type="text" id="TxtQuantity" value="0" />
+					</div>
+
+					<div class="actions-con">
+						<h4>Per unit: </h4>
+						<span id="LblUnitPrice">@product.UnitPrice.ToString("#,##0.00")</span>
+					</div>
+
+					<div class="img-con">
+						<img src="@Url.Action("ProductImage", "Home", new {productID = product.ProductID})"/>
+					</div>
+
+					<div class="details-con">
+						<div class="name">@product.Name</div>
+						<p class="desc">@product.Description</p>
+					</div>
+				</div>
+			}
+
+			<div class="totals-con">
+				<div class="totals-inner-con">
+					<div class="total-item sub-total">
+						<h4>Sub total</h4>
+						<span id="LblSubTotal"></span>
+					</div>
+
+					<div class="total-item tax">
+						<h4>Tax (@(Model.TaxPercentage + "%"))</h4>
+						<span id="LblTax"></span>
+					</div>
+
+					<div class="total-item grand-total">
+						<h4>Total</h4>
+						<span id="LblGrandTotal"></span>
+					</div>
+
+					<div class="buttons">
+						<input type="button" value="Pay now" id="BtnPay" class="primary loadable"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var BrowseProducts = function(containerSelector, model) {
+		var $con = $(containerSelector),
+			merchants = [],
+			Init = function() {
+				$con.on('keyup', '#TxtQuantity', function() {
+					// Check it's a number
+					var $txt = $(this);
+					var quan = parseInt($txt.val());
+					if (isNaN(quan)) $txt.val(0);
+					BindTotals();
+				});
+
+				$con.on('change', '#MerchantList', OnMerchantSelected);
+				$con.on('click', '#BtnPay', SaveOrder);
+				$con.on('click', '#BtnRefreshMerchants', SearchMerchants);
+
+				BindTotals();
+				BindMerchants();
+			},
+			/*
+			OnMerchantSelected
+			Fires when the user chooses a different merchant
+			*/
+			OnMerchantSelected = function() {
+				var hasMerchant = ($con.find('#MerchantList').val() != '');
+				var $PHProducts = $con.find('#PHProducts');
+				if (hasMerchant) {
+					$PHProducts.slideDown();
+					$con.find('#TxtQuantity').eq(0).focus();
+				} else {
+					$PHProducts.slideUp();
+				}
+			},
+			/*
+			SearchMerchants
+			Queries the server for our list of available merchants
+			*/
+			SearchMerchants = function() {
+				Lib.CallJSON('home/merchantlist', null, function(merchantModel) {
+					console.log("merchant search result", merchantModel);
+					merchants = merchantModel.Merchants;
+					BindMerchants();
+				});
+			},
+			/*
+			SaveOrder
+			Sends our order to the server for payment processing
+			*/
+			SaveOrder = function() {
+				var params = {
+					products: '',
+					merchantID: $con.find('#MerchantList').val()
+				};
+				
+				// Products we just loosely concatenate so we can send it all up in one GET request
+				$con.find('.product-item-con').each(function() {
+					var productID = $(this).attr('data-product-id');
+					var $txt = $(this).find('#TxtQuantity').eq(0);
+					var quantity = parseFloat($txt.val());
+					console.log("quan", quantity);
+					if (!isNaN(quantity) && quantity > 0) {
+						params.products += '|' + productID + '=' + quantity;
+						console.log(params.products);
+					}
+				});
+
+				Lib.CallJSON('home/saveorder', params, function(paymentResponse) {
+					$con.find('#BtnPay').addClass(' redirecting').val('Redirecting to your secure payment site');
+					
+					// Redirect to the secure URL
+					console.log("payment", paymentResponse);
+					var url = paymentResponse.PaymentUrl;
+					// document.location = url;
+				});
+			},
+			/*
+			BindMerchants
+			Displays our merchant list and/or buttons to load it
+			*/
+			BindMerchants = function() {
+				var $MerchantList = $con.find('#MerchantList');
+				$MerchantList.empty().show();
+				if (merchants.length == 0) {
+					$MerchantList.append('<option value="">Please refresh above</option>');
+				} else {
+					$MerchantList.append('<option value="">Please select</option>');
+					$.each(merchants, function(ind, merch) {
+						var $opt = $('<option></option>').val(merch.Id).html(merch.Name);
+						$MerchantList.append($opt);
+					});
+				}
+			},
+			/*
+			GetProduct
+			Helper routine to get the requested product info from our model
+			*/
+			GetProduct = function(productID) {
+				var result = null;
+				$.each(model.Products, function(ind, prod) {
+					if (prod.ProductID == productID) result = prod;
+				});
+				return result;
+			},
+			/*
+			BindTotals
+			UI routine which updates the total price according to the quantities the user has entered
+			*/
+			BindTotals = function() {
+				// Update totals in each line item
+				var subTotal = 0;
+				$con.find('.product-item-con').each(function() {
+					// Get info from the line item
+					var productID = $(this).attr('data-product-id');
+					var quan = parseInt($(this).find('#TxtQuantity').val());
+					var price = GetProduct(productID).UnitPrice * quan;
+					var $LblPrice = $(this).find('#LblPrice');
+					
+					// Render
+					if (!isNaN(price)) {
+						subTotal += price;
+						$LblPrice.html(subTotal.toFixed(2));
+					}
+				});
+				
+				// Update the grand totals
+				var tax = subTotal * (model.TaxPercentage / 100);
+				var grandTotal = subTotal + tax;
+				$con.find('#LblSubTotal').html(subTotal.toFixed(2));
+				$con.find('#LblTax').html(tax.toFixed(2));
+				$con.find('#LblGrandTotal').html(grandTotal.toFixed(2));
+				
+				// Only show the totals and pay button, if we have products
+				$con.find('.product-list-con').toggleClass('has-product', (grandTotal > 0));
+			};
+		return {
+			Init: Init
+		};
+	};
+	var bp = new BrowseProducts('#@Model.UniqueID', @Html.ToJSON(Model));
+	bp.Init();
+</script>

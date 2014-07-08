@@ -1,0 +1,32 @@
+﻿@using Contracts.Enums
+@model Web.Models.ErrorModel
+
+@{
+	ViewBag.Title = "Oh dear...";
+	Layout = "~/views/shared/_Empty.cshtml";	
+}
+
+<h2>
+	Oh dear...
+</h2>
+@if (Model.Exceptions.Count == 1)
+{
+	<p>
+		@Html.Raw(Model.Exceptions.First())
+	</p>
+	if (!string.IsNullOrWhiteSpace(Model.MoreInfoUrl))
+	{
+		<a href="@Model.MoreInfoUrl">Click here to continue</a>
+	}
+}
+else
+{
+	<ul class="error-list">
+		@foreach (var ex in Model.Exceptions)
+		{
+			<li>@Html.Raw(ex)</li>
+		}
+	</ul>
+}
+
+	

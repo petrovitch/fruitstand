@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Contracts.Exceptions;
-using Pushpay.Api.Client;
+using Thinktecture.IdentityModel.Client;
+using Web.Code.Contracts.Entities.ApiModels;
+using Web.Code.Contracts.Enums;
 
 namespace Web.Code.Logic
 {
@@ -13,40 +16,71 @@ namespace Web.Code.Logic
 	/// </summary>
 	public class PushpayConnection
 	{
-
 		#region Properties
 
 		private ApiClient _Client = null;
-		private ApiClient Client
-		{
-			get
-			{
-				if (_Client == null)
-				{
-					var baseUrl = ConfigurationManager.AppSettings["PushpayAPIBaseUrl"];
-					if (string.IsNullOrWhiteSpace(baseUrl)) throw new UserException("Please provide a PushpayAPIBaseUrl in your configuration AppSettings");
-					_Client = new ApiClient(baseUrl);
-				}
-				return _Client;
-			}
-		}
 
 		#endregion
 
 		/// <summary>
-		/// Constructor / entry point
+		/// Helper method to create a client connection
 		/// </summary>
-		public PushpayConnection()
+		/// <returns></returns>
+		private async Task<ApiClient> CreateClient()
 		{
-			Authenticate();
+			if (_Client == null)
+			{
+				var baseUrl = Common.Configuration.Current.PushpayAPIBaseUrl;
+				if (string.IsNullOrWhiteSpace(baseUrl)) RaiseError(new Exception("Please provide a PushpayAPIBaseUrl in your configuration AppSettings"));
+				_Client = new ApiClient(baseUrl);
+
+				// Authenticate
+				var clientID = Common.Configuration.Current.PushpayClientID;
+				var clientSecret = Common.Configuration.Current.PushpayClientSecret;
+				if (string.IsNullOrWhiteSpace(clientID) || string.IsNullOrWhiteSpace(clientSecret)) RaiseError(new Exception("Please provide Pushpay client ID and secret tokens in your configuration file"));
+
+				// Create an OAuth client to get the token required by Pushpay
+				var oauthClient = new OAuth2Client(new Uri(Common.Configuration.Current.OAuth2TokenEndpoint), clientID, clientSecret);
+				var response = await oauthClient.RequestClientCredentialsAsync("create_anticipated_payment read");
+				if (response.AccessToken == null) RaiseError(new Exception("Failed to retrieve access token, error was: " + response.Raw));
+				_Client.SetBearerToken(response.AccessToken);
+			}
+			return _Client;
 		}
 
 		/// <summary>
-		/// Passes our client credentials to Pushpay
+		/// Centralized error handling
 		/// </summary>
-		private void Authenticate()
+		/// <param name="ex"></param>
+		private void RaiseError(Exception ex)
 		{
-			this.Client.
+			// Notify listeners
+			// this.MessageHub.APIError(ex.Message);
+
+			// Continue with exception
+			throw ex;
+		}
+
+		/// <summary>
+		/// Returns a list of merchant info
+		/// </summary>
+		public async Task<List<Merchant>> GetMerchants(string name)
+		{
+			var client = await this.CreateClient();
+			var result = await client.Init("merchants").AddParam("name", name).Execute<MerchantSearchResult>();
+			return result.Items;
+		}
+
+		/// <summary>
+		/// Sends the payment details to Pushpay, which returns with a URL where we redirect the user for payment
+		/// </summary>
+		/// <param name="paymentDetails"></param>
+		/// <returns></returns>
+		public async Task<AnticipatedPaymentRepresentation> SendPaymentToPushpay(EditAnticipatedPaymentModel paymentDetails)
+		{
+			var client = await this.CreateClient();
+			var result = await client.Init("anticipatedpayments").SetMethod(RequestMethodTypes.POST).SetContent(paymentDetails).Execute<AnticipatedPaymentRepresentation>();
+			return result;
 		}
 	}
 }

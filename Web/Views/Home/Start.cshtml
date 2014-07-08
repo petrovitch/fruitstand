@@ -1,0 +1,19 @@
+﻿@{
+    Layout = "~/views/shared/_empty.cshtml";
+	ViewBag.Title = "Start";
+}
+
+<div class="cols-con start-con">
+	<div class="col">
+		<h1>Welcome to the Pushpay API Example Site</h1>
+		<p>
+			This site is designed to demonstrate how our Pushpay API can be used to process payments directly from your own website.
+		</p>
+		
+	</div>
+	<div class="col action-list">
+		<a class="button primary" href="@Url.Action("BrowseProducts", "Home")">View the demo application</a>
+		<a class="button secondary" href="">Browse the API Documentation</a>
+		<a class="button secondary" href="">Download the source code</a>
+	</div>
+</div>

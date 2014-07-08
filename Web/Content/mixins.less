@@ -1,0 +1,139 @@
+@import url(variables.less);
+
+
+#gradient {
+    .horizontal(@startColor: #555, @endColor: #333) {
+        background-color: @endColor;
+        background-image: -moz-linear-gradient(left, @startColor, @endColor); // FF 3.6+
+        background-image: -ms-linear-gradient(left, @startColor, @endColor); // IE10
+        background-image: -webkit-gradient(linear, 0 0, 100% 0, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+        background-image: -webkit-linear-gradient(left, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+        background-image: -o-linear-gradient(left, @startColor, @endColor); // Opera 11.10
+        background-image: linear-gradient(left, @startColor, @endColor); // Le standard
+        background-repeat: repeat-x;
+        filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=1)",@startColor,@endColor)); // IE9 and down
+	}
+	.vertical(@startColor: #555, @endColor: #333, @imageUrl: '', @imageRepeat: repeat, @imagePosition: 0px 0px) {
+        background-color: mix(@startColor, @endColor, 60%);
+	    background-image: url(@imageUrl);
+        background-image: url(@imageUrl), -moz-linear-gradient(top, @startColor, @endColor);
+        background-image: url(@imageUrl), -ms-linear-gradient(top, @startColor, @endColor); 
+        background-image: url(@imageUrl), -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); 
+        background-image: url(@imageUrl), -webkit-linear-gradient(top, @startColor, @endColor); 
+        background-image: url(@imageUrl), -o-linear-gradient(top, @startColor, @endColor); 
+        background-image: url(@imageUrl), linear-gradient(top, @startColor, @endColor);
+		background-repeat: @imageRepeat; 
+		background-position: @imagePosition;
+        filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); 
+	}
+}
+
+.opacity(@val) {
+	// IE hates nested opacity and IE7 seems to hate it even more, so we just don't apply it
+	&:not(ie7) {
+		@opacityPercentage: @val * 100;
+		opacity: @val;
+		filter: alpha(opacity=@opacityPercentage);
+		-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+
+		// Required because old IE elements need position in order for opacity to kick in
+		zoom: 1;
+	}
+}
+
+.vertical-center() {
+	position: relative;
+	top: 50%;
+	-webkit-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	transform: translateY(-50%);
+}
+
+.errorContainer(){
+	.border-radius(3px, 3px, 3px, 3px);
+	border-color: @errorColor;
+	color:@errorColor;
+	padding:@gutter;
+	background-color: @errorColorBackground;
+}
+
+.transition(@obj:all, @time:.2s, @easing:ease) {
+    transition: @obj @time @easing;
+    -moz-transition: @obj @time @easing;
+    -ms-transition: @obj @time @easing;
+    -o-transition: @obj @time @easing;
+    -webkit-transition: @obj @time @easing;
+}
+
+.rotate(@deg:0deg) {
+    -webkit-transform: rotate(@deg);
+    -moz-transform: rotate(@deg);
+    -ms-transform:rotate(@deg);
+    transform: rotate(@deg);
+}
+
+.clearfix() {
+    *zoom: 1;
+    &:before,
+	&:after {
+        display: table;
+        content: "";
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+.borderbox() {
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	box-sizing:border-box;
+
+}
+
+.iconsheet(@vertOffset: 0px, @paddingLeft:40px, @paddingTopBottom:inherit) {
+	background-image:url('i/iconsheet.png');
+	background-repeat:no-repeat;
+	background-position:0px @vertOffset;
+	padding:@paddingTopBottom 0px @paddingTopBottom @paddingLeft;
+	
+}
+
+.border-radius(@tl: 3px, @tr: 3px, @br: 3px, @bl: 3px) {
+	-webkit-border-top-left-radius: @tl;
+	-webkit-border-top-right-radius: @tr;
+	-webkit-border-bottom-right-radius: @br;
+	-webkit-border-bottom-left-radius: @bl;
+	-moz-border-radius-topleft: @tl;
+	-moz-border-radius-topright: @tr;
+	-moz-border-radius-bottomright: @br;
+	-moz-border-radius-bottomleft: @bl;
+	border-top-left-radius: @tl;
+	border-top-right-radius: @tr;
+	border-bottom-right-radius: @br;
+	border-bottom-left-radius: @bl;
+}
+
+// Drop shadows
+.box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)) {
+    -webkit-box-shadow: @shadow;
+    -moz-box-shadow: @shadow;
+    box-shadow: @shadow;
+}
+
+.hover {
+	background-color:@brandColor !important;
+	color: @brandColorOffset !important;
+	cursor:pointer;
+
+	a,
+	a:visited,
+	a:hover {
+		color:@brandColorOffset;
+	}
+}
+	
+.body-font-family() {
+	font-family: Lato, sans-serif; color: @fontColor; 
+	line-height:@baseLineHeight;
+}

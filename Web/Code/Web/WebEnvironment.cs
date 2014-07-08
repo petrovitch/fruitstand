@@ -17,12 +17,17 @@ namespace Web.Code
 		/// </summary>
 		/// <param name="partUrl"></param>
 		/// <returns></returns>
-		public string GetFullUrl(string partUrl)
+		public string GetFullUrl(string partUrl, bool ensureHttpPrefix = false)
 		{
 			if (partUrl.ToLower().StartsWith("http") || partUrl.ToLower().StartsWith("//")) { return partUrl; }
 			if (partUrl.StartsWith("~")) { partUrl = partUrl.Substring(1); }
 			if (partUrl.StartsWith("/")) { partUrl = partUrl.Substring(1); }
-			return SiteRoot + partUrl;
+
+			var result = SiteRoot + partUrl;
+
+			// Full URL prefix (required if URL used on another site)
+			if (ensureHttpPrefix && !result.ToLower().StartsWith("http")) result = "http:" + result;
+			return result;
 		}
 
 		public string ApplicationPath
