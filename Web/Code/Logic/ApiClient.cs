@@ -154,7 +154,10 @@ namespace Web.Code.Logic
 			var response = await _client.SendAsync(request);
 			
 			// Debug - get the raw JSON out so we can debug
-			var json = await response.Content.ReadAsStringAsync();
+			var responseDetails = new ResponseDetails();
+			responseDetails.StatusCode = ((int)response.StatusCode).ToString() + " " + response.StatusCode.ToString();
+
+			responseDetails.JSON = await response.Content.ReadAsStringAsync();
 
 			// If it's an error, we parse out exception and throw
 			if (!response.IsSuccessStatusCode)
@@ -162,13 +165,13 @@ namespace Web.Code.Logic
 				ApiResponseException exception;
 				try
 				{
-					var errorResponse = json.FromJSON<ErrorResponse>();
+					var errorResponse = responseDetails.JSON.FromJSON<ErrorResponse>();
 					exception = new ApiResponseException(response.StatusCode, response.ReasonPhrase, errorResponse);
 				}
 				catch (Exception ex)
 				{
 					// If it's not JSON formatted, we just render a general message
-					exception = new ApiResponseException(HttpStatusCode.BadRequest, "A big exception occurred", new ErrorResponse() {Message = json});
+					exception = new ApiResponseException(HttpStatusCode.BadRequest, "A big exception occurred", new ErrorResponse() {Message = responseDetails.JSON});
 				}
 				this.MessageHub.APIError(exception);
 				
@@ -177,9 +180,9 @@ namespace Web.Code.Logic
 			}
 			
 			// Parse and return
-			this.MessageHub.APIResponseReceived(json);
-			T result = json.FromJSON<T>(); 
-			result.StatusCode = response.StatusCode.ToString() + " " + response.ReasonPhrase;
+			this.MessageHub.APIResponseReceived(responseDetails);
+			var result = responseDetails.JSON.FromJSON<T>();
+ 
 			return result;
 		}
 

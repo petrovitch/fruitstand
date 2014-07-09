@@ -50,9 +50,9 @@ namespace Web.Code.Logic
 			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIError(errorMessage, this.TransactionID, this.Description);
 		}
 
-		public void APIResponseReceived(string json)
+		public void APIResponseReceived(ResponseDetails responseDetails)
 		{
-			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIResponseReceived(json, this.TransactionID, this.Description);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIResponseReceived(responseDetails, this.TransactionID, this.Description);
 		}
 
 		/// <summary>

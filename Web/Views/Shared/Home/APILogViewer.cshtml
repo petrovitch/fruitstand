@@ -141,7 +141,7 @@
 				
 				ShowLogMessage($div, apiTransactionID, transactionDesc);
 			},
-			OnResponseReceived = function(rawResponse, apiTransactionID, transactionDesc) {
+			OnResponseReceived = function(responseDetails, apiTransactionID, transactionDesc) {
 				var $div = $('<div></div>');
 
 				var $header = $('<div class="header"><span class="title">API Response Received</span></div>');
@@ -151,7 +151,7 @@
 				var $btnRaw = $('<a class="icon preview">Raw JSON</a>');
 				$header.append($btnRaw);
 				$btnRaw.click(function() {
-					ShowMessageDetails(rawResponse);
+					ShowMessageDetails(responseDetails.JSON);
 				});
 				
 				var $btnToggleAll = $('<a class="icon refresh">Expand/collapse all</a>');
@@ -176,12 +176,11 @@
 					$fields.append($dl);
 				};
 
-				console.log("resp", rawResponse);
-				fn_addfield('Status', rawResponse.StatusCode);
+				fn_addfield('Status', responseDetails.StatusCode);
 				
 				
 				// Format nice JSON object
-				var jsonFormatted = Lib.FormatJson(rawResponse, 'Response body');
+				var jsonFormatted = Lib.FormatJson(responseDetails.JSON, 'Response body');
 				$div.append(jsonFormatted);
 				ShowLogMessage($div, apiTransactionID, transactionDesc);
 			},
