@@ -54,10 +54,6 @@ namespace Web.Code.Logic
 		/// <param name="ex"></param>
 		private void RaiseError(Exception ex)
 		{
-			// Notify listeners
-			// this.MessageHub.APIError(ex.Message);
-
-			// Continue with exception
 			throw ex;
 		}
 
@@ -67,7 +63,7 @@ namespace Web.Code.Logic
 		public async Task<List<Merchant>> GetMerchants(string name)
 		{
 			var client = await this.CreateClient();
-			var result = await client.Init("merchants").AddParam("name", name).Execute<MerchantSearchResult>();
+			var result = await client.Init("merchants", "Loading merchant list").AddParam("name", name).Execute<MerchantSearchResult>();
 			return result.Items;
 		}
 
@@ -79,7 +75,7 @@ namespace Web.Code.Logic
 		public async Task<AnticipatedPaymentRepresentation> SendPaymentToPushpay(EditAnticipatedPaymentModel paymentDetails)
 		{
 			var client = await this.CreateClient();
-			var result = await client.Init("anticipatedpayments").SetMethod(RequestMethodTypes.POST).SetContent(paymentDetails).Execute<AnticipatedPaymentRepresentation>();
+			var result = await client.Init("anticipatedpayments", "Sending payment to Pushpay").SetMethod(RequestMethodTypes.POST).SetContent(paymentDetails).Execute<AnticipatedPaymentRepresentation>();
 			return result;
 		}
 
@@ -91,7 +87,7 @@ namespace Web.Code.Logic
 		public async Task<AnticipatedPaymentRepresentation> GetPaymentInfo(string anticipatedPaymentToken)
 		{
 			var client = await this.CreateClient();
-			var result = await client.Init("anticipatedpayment/" + anticipatedPaymentToken).SetMethod(RequestMethodTypes.GET).Execute<AnticipatedPaymentRepresentation>();
+			var result = await client.Init("anticipatedpayment/" + anticipatedPaymentToken, "Loading payment information").SetMethod(RequestMethodTypes.GET).Execute<AnticipatedPaymentRepresentation>();
 			return result;
 		}
 	}

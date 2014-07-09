@@ -203,6 +203,7 @@ to the Pushpay API.
 				});
 				return result;
 			},
+			
 			/*
 			BindTotals
 			UI routine which updates the total price according to the quantities the user has entered
@@ -227,9 +228,9 @@ to the Pushpay API.
 				// Update the grand totals
 				var tax = subTotal * (model.TaxPercentage / 100);
 				var grandTotal = subTotal + tax;
-				$con.find('#LblSubTotal').html(subTotal.toFixed(2));
-				$con.find('#LblTax').html(tax.toFixed(2));
-				$con.find('#LblGrandTotal').html(grandTotal.toFixed(2));
+				$con.find('#LblSubTotal').html(Lib.Round(subTotal, 2));
+				$con.find('#LblTax').html(Lib.Round(tax, 2));
+				$con.find('#LblGrandTotal').html(Lib.Round(grandTotal, 2));
 				
 				// Only show the totals and pay button, if we have products
 				$con.find('.product-list-con').toggleClass('has-product', (grandTotal > 0));

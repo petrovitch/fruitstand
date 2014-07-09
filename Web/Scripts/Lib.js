@@ -12,12 +12,37 @@ var Lib = function () {
 			var siteRoot = '/';
 			url = siteRoot + url;
 			$.getJSON(url, params, function (result) {
-				// Close 'loading' feedback
-				$('body').find('.loading').removeClass('loading');
-
-				// Back to the user-specified callback
-				callback(result);
+				OnRequestComplete();
+				console.log("JSON result", result);
+				// Check for error type?
+				if (result.IsError) {
+					// Format an error message
+					var errorMessage = '';
+					if (result.Exceptions.length == 1) {
+						errorMessage = result.Exceptions[0];
+					} else {
+						errorMessage = $('<ul></ul>');
+						$.each(result.Exceptions, function(ind, ex) {
+							errorMessage.append($('<li></li>').html(ex));
+						});
+					}
+					ShowError(errorMessage);
+					return;
+				}else{
+					// Back to the user-specified callback
+					callback(result);
+				}
 			});
+		},
+		/*
+		Round
+		JS implementations of toFixed() etc are inconsistent, so we roll our own
+		Adapted from http://stackoverflow.com/questions/10015027/javascript-tofixed-not-rounding
+		*/
+		Round = function( number, precision ) {
+			var multiplier = Math.pow( 10, precision + 1 ),
+				wholeNumber = Math.floor( number * multiplier );
+			return Math.round( wholeNumber / 10 ) * 10 / multiplier;
 		},
 		
 		/*
@@ -36,6 +61,62 @@ var Lib = function () {
 			// Show or hide the dev panel
 			$('body').on('click', '.toggle-developer-mode', function () {
 				Lib.ToggleDeveloperMode();
+			});
+			
+			// Ajax error handlers can bubble to user
+			$.ajaxSetup({
+				error: function (e, jqxhr, settings, exception) {
+					if (e.status != 200) {
+						OnRequestComplete();
+
+						// If the transfer is interupted, we get an empty message back - no point showing
+						if (e.responseText) {
+							ShowError(e.responseText);
+						}
+					}
+				}
+			});
+
+		},
+		/*
+		OnRequestComplete
+		Should be called after each Ajax request
+		*/
+		OnRequestComplete = function() {
+			$('body').find('.loading').removeClass('loading');
+		},
+		/*
+		ShowError
+		Notifies the user of the given error
+		*/
+		ShowError = function(msg) {
+			ShowMessage(msg, true);
+		},
+		/*
+		ShowMessage
+		Quick notification to the user
+		*/
+		ShowMessage = function (msg, isError) {
+			console.log("Message", msg);
+			var $msg = $('<div></div>').addClass('popup-message-con').toggleClass('error-msg', isError);
+			$msg.html(msg).hide();
+			
+			$('body').append($msg);
+			
+			// Close on click?
+			$msg.bind('click', function() {
+				CloseMessage($msg);
+			});
+
+			// Show
+			$msg.fadeIn();
+			setTimeout(function() {
+				CloseMessage($msg);
+			}, 5000);
+		},
+		CloseMessage = function($msg) {
+			$msg.fadeOut(200, function() {
+				$msg.remove();
 			});
 		},
 		/*
@@ -138,7 +219,9 @@ var Lib = function () {
 		;
 
 	return {
+		Round: Round,
 		CallJSON: CallJSON,
+		ShowMessage: ShowMessage,
 		Cookies: Cookies,
 		FormatJson: FormatJson,
 		InitializePage: InitializePage,

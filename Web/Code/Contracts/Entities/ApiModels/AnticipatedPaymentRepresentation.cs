@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Web.Code.Contracts.Entities.ApiModels
 {
-	public partial class AnticipatedPaymentRepresentation
+	public partial class AnticipatedPaymentRepresentation : BaseResponse
 	{
 		public AnticipatedPaymentRepresentation()
 		{

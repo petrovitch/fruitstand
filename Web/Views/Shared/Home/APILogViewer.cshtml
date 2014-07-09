@@ -2,6 +2,14 @@
 @using Web.Code.Common.Extensions
 @using Web.Code.Common.Extensions
 <div id="@Model.UniqueID" class="log-viewer-con">
+	<div class="raw-json-con" tabindex="0">
+		<div class="rpt-head"><h2>Details</h2>
+
+			<a id="BtnCloseJson" class="icon delete">Close panel</a>
+		</div>
+		
+		<textarea id="TxtJson" readonly tabindex="1"></textarea>
+	</div>
 
 	<div class="toggle-developer-mode inline-only">Show</div>	
 	<div class="rpt-head">
@@ -35,7 +43,7 @@
 	var APILogViewer = function(containerSelector, model) {
 		var $con = $(containerSelector),
 			$PHLogMessages = $con.find('#PHLogMessages'),
-			
+			$RawJson = $con.find('.raw-json-con'),
 			Init = function() {
 				MessageBroadcaster.JoinGroup('APIRequestsForUser', model.CurrentUserID);
 				MessageBroadcaster.Subscribe('APIRequestSent', OnRequestSending);
@@ -43,6 +51,12 @@
 				MessageBroadcaster.Subscribe('APIError', OnError);
 
 				$con.on('click', '#BtnNewWindow', OpenWindow);
+				
+				// Escape key hides our JSON
+				$RawJson.on('click', '#BtnCloseJson', HideMessageDetails);
+				$RawJson.bind('keyup', function(e) {
+					if (e.which == 27) HideMessageDetails();
+				});
 	
 				// Allow user to expand JSON objects by clicking on them
 				$con.on('click', '.expandable .property-name', function() {
@@ -53,8 +67,41 @@
 			OpenWindow = function() {
 				var url = '/home/developerconsole';
 				var popup = window.open(url, 'developerconsole', 'top=100,left=100,width=600,height=600');
+				
+				// Close this panel because its now open in the popup
+				Lib.ToggleDeveloperMode();
 			},
-			OnRequestSending = function(details) {
+			ShowLogMessage = function($elementToShow, apiTransactionID, transactionDesc) {
+				console.log("Transaction", apiTransactionID);
+				console.log("Transaction desc", transactionDesc);
+				$elementToShow.addClass('request-details-con').attr('data-apitransactionid', apiTransactionID);
+				if (transactionDesc != '') $elementToShow.prepend('<span class="transaction-title">' + transactionDesc + '</span>');
+				
+				// If we have an existing item in this transaction, then we show underneath, otherwise we append to the top
+				var $priorTransaction = $PHLogMessages.find('[data-apitransactionid=' + apiTransactionID + ']').last();
+				if ($priorTransaction.length) {
+					$elementToShow.addClass('is-subsequent-transaction');
+					$priorTransaction.after($elementToShow);
+				}else{
+					$elementToShow.addClass('is-initial-transaction');
+					$PHLogMessages.prepend($elementToShow);
+				}
+				setTimeout(function() {
+					$elementToShow.addClass('show-in-list');
+				}, 50);
+
+			},
+			HideMessageDetails = function() {
+				$RawJson.removeClass('active');
+			},
+			ShowMessageDetails = function(json) {
+				console.log(json);
+
+				// Dynamically adjust the height of the text area to use as much room as possible
+				$RawJson.find('textarea').val(json).focus().select();
+				$RawJson.width($con.width() - 50).addClass('active');
+			},
+			OnRequestSending = function(details, apiTransactionID, transactionDesc) {
 				// Create an HTML template to show the details
 				var $div = $('<div><div class="header"><span class="title">Sending API Request</span></div></div>');
 				var $header = $div.find('.header');
@@ -74,8 +121,7 @@
 					var $btnRaw = $('<a class="icon preview ">Raw JSON</a>');
 					$header.append($btnRaw);
 					$btnRaw.click(function() {
-						console.log(details.SerializedContent);
-						alert(details.SerializedContent);
+						ShowMessageDetails(details.SerializedContent);
 					});
 					
 					var $btnToggleAll = $('<a class="icon refresh">Expand/collapse all</a>');
@@ -93,9 +139,9 @@
 				}
 				
 				
-				ShowLogMessage($div);
+				ShowLogMessage($div, apiTransactionID, transactionDesc);
 			},
-			OnResponseReceived = function(rawResponse) {
+			OnResponseReceived = function(rawResponse, apiTransactionID, transactionDesc) {
 				var $div = $('<div></div>');
 
 				var $header = $('<div class="header"><span class="title">API Response Received</span></div>');
@@ -105,8 +151,7 @@
 				var $btnRaw = $('<a class="icon preview">Raw JSON</a>');
 				$header.append($btnRaw);
 				$btnRaw.click(function() {
-					console.log(rawResponse);
-					alert(rawResponse);
+					ShowMessageDetails(rawResponse);
 				});
 				
 				var $btnToggleAll = $('<a class="icon refresh">Expand/collapse all</a>');
@@ -120,22 +165,30 @@
 					$(this).toggleClass('all-expanded');
 				});
 				
+				// Fields
+				var $fields = $('<fieldset class="small horiz"></fieldset>');
+				$div.append($fields);
+
+				var fn_addfield = function(label, content) {
+					var $dl = $('<dl></dl');
+					$dl.append($('<dt></dt>').html(label));
+					$dl.append($('<dd></dd>').html(content));
+					$fields.append($dl);
+				};
+
+				console.log("resp", rawResponse);
+				fn_addfield('Status', rawResponse.StatusCode);
+				
 				
 				// Format nice JSON object
 				var jsonFormatted = Lib.FormatJson(rawResponse, 'Response body');
 				$div.append(jsonFormatted);
-				ShowLogMessage($div);
-
-			},
-			ShowLogMessage = function($elementToShow) {
-				$elementToShow.hide().addClass('request-details-con');
-				$PHLogMessages.prepend($elementToShow);
-				$elementToShow.slideDown();
+				ShowLogMessage($div, apiTransactionID, transactionDesc);
 			},
 
-			OnError = function(msg) {
+			OnError = function(msg, apiTransactionID, transactionDesc) {
 				console.error("API error", msg);
-				var $div = $('<div></div>').addClass('error small');
+				var $div = $('<div></div>').addClass('api-error');
 
 				// Format message - strip HTMl from it too
 				var isTruncated = false;
@@ -150,12 +203,11 @@
 				if (isTruncated) {
 					var $btn = $('<a></a>').html('more...');
 					$btn.click(function() {
-						alert(msg.Message);
+						ShowMessageDetails(msg.Message);
 					});
 					$div.append($btn);
 				}
-
-				ShowLogMessage($div);
+				ShowLogMessage($div, apiTransactionID, transactionDesc);
 			};
 		return {
 			Init: Init

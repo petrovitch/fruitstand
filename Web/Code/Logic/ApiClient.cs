@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Contracts.Exceptions;
 using Newtonsoft.Json;
 using Web.Code.Common.Extensions;
 using Web.Code.Contracts.Entities;
@@ -27,6 +28,8 @@ namespace Web.Code.Logic
 
 		#region Properties
 
+		private DeveloperMessageHub MessageHub = null;
+	
 		private HttpClient _client;
 		private readonly MediaTypeFormatter[] _formatters;
 
@@ -64,14 +67,18 @@ namespace Web.Code.Logic
 		}
 
 		/// <summary>
-		/// The URL of our API call, relative to the base APi URL. For example, the base URL may be 'http://api.com/v1/' and this relative Url may be 'Merchants/GetMerchants'
+		/// Initialises our API connection
 		/// </summary>
-		/// <param name="relativeUrl"></param>
+		/// <param name="relativeUrl">The URL of our API call, relative to the base APi URL. For example, the base URL may be 'http://api.com/v1/' and this relative Url may be 'Merchants/GetMerchants'</param>
+		/// <param name="description">Optional description which we simply propogate through to our developer UI to make debugging easier. Entirely optional</param>
 		/// <returns></returns>
-		public ApiClient Init(string relativeUrl)
+		public ApiClient Init(string relativeUrl,string description = "")
 		{
 			this.Reset();
 			this.RequestDetails.RelativeUrl = relativeUrl;
+
+			// Create a developer log so we can broadcast API activity
+			this.MessageHub = new DeveloperMessageHub() { TransactionID = Guid.NewGuid(), Description = description };
 
 			// Return self to facilitate call chaining
 			return this;
@@ -134,19 +141,18 @@ namespace Web.Code.Logic
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		public virtual async Task<T> Execute<T>()
+		public virtual async Task<T> Execute<T>() where T : BaseResponse
 		{
-			var msgHub = new MessageHub();
 
 			// Create our requested, based on the various parameters we have for this call
 			var request = this.BuildRequest();
 
 			// Debug - notify listeners that we are making this request
-			msgHub.APIRequestSent(this.RequestDetails);
+			this.MessageHub.APIRequestSent(this.RequestDetails);
 
 			// Send to the API
 			var response = await _client.SendAsync(request);
-
+			
 			// Debug - get the raw JSON out so we can debug
 			var json = await response.Content.ReadAsStringAsync();
 
@@ -164,13 +170,16 @@ namespace Web.Code.Logic
 					// If it's not JSON formatted, we just render a general message
 					exception = new ApiResponseException(HttpStatusCode.BadRequest, "A big exception occurred", new ErrorResponse() {Message = json});
 				}
-				new MessageHub().APIError(exception);
-				throw exception;
+				this.MessageHub.APIError(exception);
+				
+				// Friendlier message for our UI
+				throw new UserException(exception.Message);
 			}
 			
 			// Parse and return
-			msgHub.APIResponseReceived(json);
-			T result = json.FromJSON<T>(); // await response.Content.ReadAsAsync<T>(_formatters);
+			this.MessageHub.APIResponseReceived(json);
+			T result = json.FromJSON<T>(); 
+			result.StatusCode = response.StatusCode.ToString() + " " + response.ReasonPhrase;
 			return result;
 		}
 

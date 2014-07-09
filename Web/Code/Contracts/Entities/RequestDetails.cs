@@ -21,7 +21,12 @@ namespace Web.Code.Contracts.Entities
 		/// </summary>
 		public string FullUrl
 		{
-			get { return BaseUrl + RelativeUrl + "?" + QueryString; }
+			get
+			{
+				var s = BaseUrl + RelativeUrl;
+				if (!string.IsNullOrWhiteSpace(this.QueryString)) s += "?" + QueryString;
+				return s;
+			}
 		}
 
 		/// <summary>
@@ -44,7 +49,7 @@ namespace Web.Code.Contracts.Entities
 			get
 			{
 				var queryParameters = HttpUtility.ParseQueryString("");
-				this.QueryStringValues.Where(x => x.Value != null).ToList().ForEach(kvp => queryParameters[kvp.Key] = kvp.Value.ToString());
+				this.QueryStringValues.Where(x => x.Value != null && !string.IsNullOrWhiteSpace(x.Value.ToString())).ToList().ForEach(kvp => queryParameters[kvp.Key] = kvp.Value.ToString());
 				return queryParameters.ToString();
 			}
 		}

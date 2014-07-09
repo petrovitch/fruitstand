@@ -911,7 +911,7 @@ input[type=submit]:not(.secondary):hover {
 .main-header {
   margin-left: auto;
   margin-right: auto;
-  width: 940px;
+  max-width: 940px;
   padding: 0px;
   border-bottom: 1px #d9d9d9 solid;
   margin-bottom: 20px;
@@ -953,7 +953,7 @@ input[type=submit]:not(.secondary):hover {
   border-bottom-right-radius: 40px;
   border-bottom-left-radius: 40px;
   background-size: cover;
-  background-image: url(i/headerlogo.png);
+  background-color: #b32b2f;
   background-repeat: no-repeat;
   background-position: center center;
 }
@@ -982,13 +982,16 @@ input[type=submit]:not(.secondary):hover {
 }
 .main-header .main-nav ul.menu li a {
   line-height: 30px;
-  color: #777;
+  color: #a5a5a5;
+  font-weight: normal;
+  text-transform: uppercase;
   padding-left: 10px;
   padding-right: 10px;
   border-left: 1px #d9d9d9 solid;
 }
 .main-header .main-nav ul.menu li a:first-child {
   border-left: none;
+  padding-left: 0px;
 }
 .main-header .main-nav ul.sub-menu {
   float: right;
@@ -1712,6 +1715,54 @@ body.show-developer-console .main-header {
   height: auto;
   overflow-y: auto;
 }
+.log-viewer-con .raw-json-con {
+  position: fixed;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #fff;
+  padding: 20px;
+  margin-top: -800px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+}
+.log-viewer-con .raw-json-con:not(ie7) {
+  opacity: 0;
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+  zoom: 1;
+}
+.log-viewer-con .raw-json-con.active {
+  margin-top: 0px;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  transform: rotate(0deg);
+}
+.log-viewer-con .raw-json-con.active:not(ie7) {
+  opacity: 1;
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+  zoom: 1;
+}
+.log-viewer-con .raw-json-con textarea {
+  font-size: small;
+  height: 500px;
+  width: 100%;
+}
 .log-viewer-con .toggle-developer-mode {
   cursor: pointer;
   top: 20px;
@@ -1756,7 +1807,7 @@ body.show-developer-console .main-header {
   margin-bottom: 0px;
 }
 .log-viewer-con .requests-con {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 500px;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -1765,12 +1816,61 @@ body.show-developer-console .main-header {
 .log-viewer-con .requests-con .request-details-con {
   padding: 10px;
   border-top: 1px dashed #ccc;
+  max-height: 0px;
+  transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+  font-size: 11px;
 }
-.log-viewer-con .requests-con .request-details-con.error {
+.log-viewer-con .requests-con .request-details-con:not(ie7) {
+  opacity: 0;
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+  zoom: 1;
+}
+.log-viewer-con .requests-con .request-details-con.show-in-list {
+  max-height: 2000px;
+}
+.log-viewer-con .requests-con .request-details-con.show-in-list:not(ie7) {
+  opacity: 1;
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+  zoom: 1;
+}
+.log-viewer-con .requests-con .request-details-con.show-in-list.is-initial-transaction {
+  margin-left: 20px;
+}
+.log-viewer-con .requests-con .request-details-con.show-in-list.is-subsequent-transaction {
+  margin-left: 20px;
+}
+.log-viewer-con .requests-con .request-details-con.is-initial-transaction {
+  margin-left: -200px;
+}
+.log-viewer-con .requests-con .request-details-con.is-subsequent-transaction {
+  margin-left: 500px;
+}
+.log-viewer-con .requests-con .request-details-con.is-subsequent-transaction .transaction-title {
+  display: none;
+}
+.log-viewer-con .requests-con .request-details-con.api-error {
   border: 1px #cc0000 solid;
+  color: #cc0000;
 }
 .log-viewer-con .requests-con .request-details-con:first-child {
   border-top: 1px transparent solid;
+}
+.log-viewer-con .requests-con .request-details-con .transaction-title {
+  color: #bfbfbf;
+  font-size: larger;
+  font-weight: normal;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px #f2f2f2 solid;
+  text-transform: uppercase;
+  display: block;
+  margin-left: -20px;
 }
 .log-viewer-con .requests-con .request-details-con .header {
   max-width: 450px;
@@ -1795,6 +1895,9 @@ body.show-developer-console .main-header {
 .log-viewer-con .requests-con .request-details-con .header .title {
   line-height: 20px;
   font-weight: bold;
+}
+.log-viewer-con .requests-con .request-details-con .header .title:after {
+  content: '...';
 }
 .log-viewer-con .requests-con .request-details-con .header a {
   float: right;
@@ -1875,4 +1978,33 @@ body.show-developer-console .main-header {
 }
 .json-desc .property-con .property-name:after {
   content: ':';
+}
+.popup-message-con {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  width: 500px;
+  font-size: 11px;
+  margin-left: -250px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 20px;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
+  border: 1px #333 solid;
+  cursor: pointer;
+}
+.popup-message-con:not(ie7) {
+  opacity: 0.9;
+  filter: alpha(opacity=80);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@opacityPercentage)";
+  zoom: 1;
+}
+.popup-message-con.error-msg {
+  border: 1px #cc0000 solid;
+  color: #cc0000;
+  background-color: #fddddd;
 }

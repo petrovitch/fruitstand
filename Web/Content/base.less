@@ -373,7 +373,7 @@ input[type=submit]:not(.secondary) {
 .main-header {
 	margin-left:auto;
 	margin-right:auto;
-	width: @containerWidth;
+	max-width: @containerWidth;
 	padding: 0px;
 	@headerHeight: 40px;
 	border-bottom: 1px darken(@menuBackgroundColor, 10%) solid;
@@ -389,7 +389,8 @@ input[type=submit]:not(.secondary) {
 		display:block;
 		.border-radius(@headerHeight, @headerHeight, @headerHeight, @headerHeight);
 		background-size:cover;
-		background-image: url(i/headerlogo.png);
+		// background-image: url(i/headerlogo.png);
+		background-color:@brandColor;
 		background-repeat: no-repeat;
 		background-position: center center;
 	}
@@ -405,13 +406,16 @@ input[type=submit]:not(.secondary) {
 			li {
 				a {
 					line-height: @lineHeight;
-					color: #777;
+					color: darken(@bodyBackground, 30%);
+					font-weight:normal;
+					text-transform:uppercase;
 					padding-left: @gutter / 2;
 					padding-right: @gutter / 2;
 					border-left: 1px darken(@menuBackgroundColor, 10%) solid;
 
 					&:first-child {
 						border-left: none;
+						padding-left:0px;
 					}
 				}
 			}
@@ -994,7 +998,9 @@ body {
 	right: -@logWidth;
 	padding: @gutter;
 	background-color: #fff;
+
 	.box-shadow();
+
 	// If own window, then we never hide
 	.developer-console-window & {
 		position: relative;
@@ -1015,10 +1021,37 @@ body {
 		}
 	}
 
+	.raw-json-con {
+		position: fixed;
+		width: 90%;
+		margin-left:auto;
+		margin-right:auto;
+		.opacity(0);
+		background-color: #fff;
+		padding: @gutter;
+		margin-top: -800px; // Pulls up over the top padding over our main container
+		.borderbox();
+		.rotate(90deg);
+		.box-shadow();
+		.transition();
+
+		&.active {
+			margin-top:0px;
+			.rotate(0deg);
+			.opacity(1);
+		}
+
+		textarea {
+			font-size:small;
+			height:500px;
+			width:100%;
+		}
+	}
+
 
 	.toggle-developer-mode {
 		@buttonWidth: 50px;
-		cursor:pointer;
+		cursor: pointer;
 		top: 20px;
 		text-indent: -9999px;
 		.borderbox();
@@ -1045,25 +1078,68 @@ body {
 		font-size: @smallFont;
 
 		p:last-child {
-			margin-bottom:0px;
+			margin-bottom: 0px;
 		}
 	}
 
 	.requests-con {
-		overflow-y: scroll;
+		overflow-y: auto;
 		height: 500px;
 		.borderbox();
 
 		.request-details-con {
 			padding: @gutter / 2;
 			border-top: 1px dashed #ccc;
+			.opacity(0);
+			max-height: 0px;
+			.transition();
+			font-size: @smallFont;
 
-			&.error {
+			&.show-in-list {
+				.opacity(1);
+				max-height: 2000px;
+
+				&.is-initial-transaction {
+					margin-left: @gutter;
+				}
+
+				&.is-subsequent-transaction {
+					margin-left: @gutter;
+				}
+			}
+
+			&.is-initial-transaction {
+				// Hide on left
+				margin-left: -200px;
+			}
+
+			&.is-subsequent-transaction {
+				margin-left: 500px;
+				// Hide title - it is in the initial transaction
+				.transaction-title {
+					display: none;
+				}
+			}
+
+			&.api-error {
 				border: 1px @errorColor solid;
+				color:@errorColor;
 			}
 
 			&:first-child {
 				border-top: 1px transparent solid;
+			}
+
+			.transaction-title {
+				color: darken(@bodyBackground, 20%);
+				font-size: larger;
+				font-weight: normal;
+				margin-bottom: @gutter / 2;
+				padding-bottom: @gutter / 2;
+				border-bottom: 1px @bodyBackground solid;
+				text-transform: uppercase;
+				display: block;
+				margin-left: -@gutter;
 			}
 
 			.header {
@@ -1073,6 +1149,10 @@ body {
 				.title {
 					line-height: @gutter;
 					font-weight: bold;
+
+					&:after {
+						content: '...';
+					}
 				}
 
 				a {
@@ -1142,5 +1222,28 @@ body {
 				content: ':';
 			}
 		}
+	}
+}
+
+.popup-message-con {
+	@width: 500px;
+	position: fixed;
+	bottom: 100px;
+	left: 50%;
+	width: @width;
+	font-size:@smallFont;
+	margin-left: -@width /2;
+	.borderbox();
+	padding: @gutter;
+	.box-shadow();
+	.opacity(0.9);
+	background-color: #fff;
+	border:1px #333 solid;
+	cursor:pointer;
+
+	&.error-msg {
+		border:1px @errorColor solid;
+		color: @errorColor;
+		background-color: @errorColorBackground;
 	}
 }

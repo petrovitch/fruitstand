@@ -11,16 +11,23 @@ namespace Web.Code.Logic
 	/// <summary>
 	/// Allows us to broadcast server notifications in real-time, such that the client application can display feedback to the user
 	/// </summary>
-	public class MessageHub : Hub
+	public class DeveloperMessageHub : Hub
 	{
+		#region Properties
+
+		public Guid TransactionID = Guid.Empty;
 
 		private IHubContext Connection
 		{
 			get
 			{
-				return GlobalHost.ConnectionManager.GetHubContext<MessageHub>();
+				return GlobalHost.ConnectionManager.GetHubContext<DeveloperMessageHub>();
 			}
 		}
+
+		public string Description = "";
+
+		#endregion
 
 		/// <summary>
 		/// Allows the person to join this group
@@ -40,12 +47,12 @@ namespace Web.Code.Logic
 		/// <param name="errorMessage"></param>
 		public void APIError(ApiResponseException errorMessage)
 		{
-			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIError(errorMessage);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIError(errorMessage, this.TransactionID, this.Description);
 		}
 
 		public void APIResponseReceived(string json)
 		{
-			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIResponseReceived(json);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIResponseReceived(json, this.TransactionID, this.Description);
 		}
 
 		/// <summary>
@@ -54,7 +61,7 @@ namespace Web.Code.Logic
 		/// <param name="requestDetails"></param>
 		public void APIRequestSent(RequestDetails requestDetails)
 		{
-			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIRequestSent(requestDetails);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIRequestSent(requestDetails, this.TransactionID, this.Description);
 		}
 
 		/// <summary>

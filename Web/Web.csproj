@@ -164,6 +164,7 @@
     <Compile Include="Code\Contracts\Cache\ICachable.cs" />
     <Compile Include="Code\Contracts\Cache\IUserDataManager.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\AnticipatedPaymentRepresentation.cs" />
+    <Compile Include="Code\Contracts\Entities\ApiModels\BaseResponse.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\EditAnticipatedPaymentModel.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\ErrorResponse.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\ErrorResultCode.cs" />
@@ -183,7 +184,7 @@
     <Compile Include="Code\Contracts\Exceptions\UserException.cs" />
     <Compile Include="Code\Contracts\Exceptions\UserExceptionCollection.cs" />
     <Compile Include="Code\Logic\ApiClient.cs" />
-    <Compile Include="Code\Logic\MessageHub.cs" />
+    <Compile Include="Code\Logic\DeveloperMessageHub.cs" />
     <Compile Include="Code\Logic\DataRepository.cs" />
     <Compile Include="Code\Logic\PushPayConnection.cs" />
     <Compile Include="Code\Logic\ShoppingCart.cs" />

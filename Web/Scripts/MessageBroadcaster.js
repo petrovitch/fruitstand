@@ -8,7 +8,7 @@ var MessageBroadcaster = function () {
 		hasStarted = false,
 		subscriptions = [],
 		Init = function () {
-			messageHub = $.connection.messageHub;
+			messageHub = $.connection.developerMessageHub;
 
 			$.connection.hub.error(function(msg) {
 				console.error("SignalR error: " + msg);
@@ -45,7 +45,7 @@ var MessageBroadcaster = function () {
 			while (groups.length) {
 				var grp = groups[0];
 				messageHub.server.joinGroup(grp.groupType, grp.groupName);
-				groups.remove(0);
+				groups.splice(0, 1);
 			}
 		},
 			
