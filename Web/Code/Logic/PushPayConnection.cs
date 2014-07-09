@@ -90,5 +90,12 @@ namespace Web.Code.Logic
 			var result = await client.Init("anticipatedpayment/" + anticipatedPaymentToken, "Loading payment information").SetMethod(RequestMethodTypes.GET).Execute<AnticipatedPaymentRepresentation>();
 			return result;
 		}
+
+		public async Task<Merchant> GetMerchant(int merchantID)
+		{
+			var client = await this.CreateClient();
+			var result = await client.Init("merchant/" + merchantID, "Loading merchant details").SetMethod(RequestMethodTypes.GET).Execute<Merchant>();
+			return result;
+		}
 	}
 }

@@ -114,7 +114,7 @@ namespace Web.Controllers
 
 			// Load current merchant
 			model.Merchants = await new PushpayConnection().GetMerchants("");
-			model.CurrentMerchant = model.Merchants.FirstOrDefault(x => x.Id == Configuration.Current.MerchantID);
+			model.CurrentMerchant = await new PushpayConnection().GetMerchant(Configuration.Current.MerchantID);
 
 			return View(model);
 		}

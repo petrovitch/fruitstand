@@ -18,7 +18,8 @@ namespace Web.Code.Logic
 		public List<CartItem> Items { get; private set; }
 		public double SubTotal
 		{
-			get { var products = new DataRepository().GetProducts();
+			get { 
+				var products = new DataRepository().GetProducts();
 
 				var total = 0.0;
 				foreach (var cartItem in this.Items)
@@ -56,6 +57,28 @@ namespace Web.Code.Logic
 		{
 			
 			this.Items = new List<CartItem>();
+
+		}
+
+		/// <summary>
+		/// Formats our selected items to make a nice description of the overall basket
+		/// </summary>
+		/// <returns></returns>
+		private string GetBasketContentsDescription()
+		{
+			var products = new DataRepository().GetProducts();
+
+			var desc = new List<string>();
+			foreach (var cartItem in this.Items)
+			{
+				if (cartItem.Quantity <= 0) continue;
+
+				var product = products.FirstOrDefault(x => x.ProductID == cartItem.ProductID);
+				if (product == null) continue;
+				desc.Add(cartItem.Quantity.ToString("0.#") + " x " + product.Name);
+			}
+
+			return string.Join(Environment.NewLine, desc);
 		}
 
 		/// <summary>
@@ -76,8 +99,8 @@ namespace Web.Code.Logic
 				});
 
 			// Other info
-			paymentDetails.Description = "Test purchase by the Pushpay API Example site";
-			paymentDetails.DescriptionTitle = "My Test Purchase";
+			paymentDetails.Description = this.GetBasketContentsDescription();
+			paymentDetails.DescriptionTitle = "Fruit purchase";
 			paymentDetails.Merchant = merchantID;
 			paymentDetails.Reference = Guid.NewGuid().ToString(); // Would typically be your own invoice/reference number according to your e-commerce shopping cart
 			paymentDetails.ReturnTitle = "Return to the example site";

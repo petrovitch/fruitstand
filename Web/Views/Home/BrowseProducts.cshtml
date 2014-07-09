@@ -7,7 +7,12 @@
 
 <div id="@Model.UniqueID" class="browse-products-con">
 	<div class="intro">
-	<h1>Pushpay Fruit Stand</h1>
+		@if (Model.CurrentMerchant != null)
+		{
+			<h1>@Model.CurrentMerchant.Name</h1>
+		}else{
+			<h1>Pushpay Fruit Stand</h1>
+}
 		<p>
 			This fictional shop site is designed to demonstrate how the Pushpay API can be used to process payments directly from your own website. Just add some products
 			to your shopping cart below then proceed to the checkout page.
@@ -17,7 +22,7 @@
 		</p>
 		<p>
 			<strong>Are you a developer? </strong> We have a special treat - use the <a class="toggle-developer-mode">Developer Console</a> to get a real-time view of how we're connecting
-to the Pushpay API.
+			to the Pushpay API.
 		</p>
 	</div>
 	@if (Model.CurrentMerchant == null)
