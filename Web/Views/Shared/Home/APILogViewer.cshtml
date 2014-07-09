@@ -37,6 +37,7 @@
 			$PHLogMessages = $con.find('#PHLogMessages'),
 			
 			Init = function() {
+				MessageBroadcaster.JoinGroup('APIRequestsForUser', model.CurrentUserID);
 				MessageBroadcaster.Subscribe('APIRequestSent', OnRequestSending);
 				MessageBroadcaster.Subscribe('APIResponseReceived', OnResponseReceived);
 				MessageBroadcaster.Subscribe('APIError', OnError);

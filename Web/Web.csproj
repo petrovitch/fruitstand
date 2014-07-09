@@ -175,6 +175,7 @@
     <Compile Include="Code\Contracts\Entities\CartItem.cs" />
     <Compile Include="Code\Contracts\Entities\Product.cs" />
     <Compile Include="Code\Contracts\Entities\RequestDetails.cs" />
+    <Compile Include="Code\Contracts\Enums\MessageBroadcasterGroupTypes.cs" />
     <Compile Include="Code\Contracts\Enums\RequestMethodTypes.cs" />
     <Compile Include="Code\Contracts\Enums\ReturnTypes.cs" />
     <Compile Include="Code\Contracts\Exceptions\ApiResponseException.cs" />

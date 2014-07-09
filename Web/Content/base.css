@@ -1713,6 +1713,7 @@ body.show-developer-console .main-header {
   overflow-y: auto;
 }
 .log-viewer-con .toggle-developer-mode {
+  cursor: pointer;
   top: 20px;
   text-indent: -9999px;
   -moz-box-sizing: border-box;

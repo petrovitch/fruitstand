@@ -1,7 +1,10 @@
 
+using System;
 using Microsoft.AspNet.SignalR;
 using Web.Code.Contracts.Entities;
+using Web.Code.Contracts.Enums;
 using Web.Code.Contracts.Exceptions;
+using Web.Code.Web;
 
 namespace Web.Code.Logic
 {
@@ -20,12 +23,29 @@ namespace Web.Code.Logic
 		}
 
 		/// <summary>
+		/// Allows the person to join this group
+		/// </summary>
+		/// <param name="groupType"></param>
+		/// <param name="groupID"></param>
+		public void JoinGroup(MessageBroadcasterGroupTypes groupType, object groupID)
+		{
+			if (groupID == null) return;
+			var groupName = groupType.ToString() + "_" + groupID.ToString();
+			this.Connection.Groups.Add(Context.ConnectionId, groupName);
+		}
+
+		/// <summary>
 		/// Notifies listeners that the API threw the given error
 		/// </summary>
 		/// <param name="errorMessage"></param>
 		public void APIError(ApiResponseException errorMessage)
 		{
-			this.Connection.Clients.All.APIError(errorMessage);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIError(errorMessage);
+		}
+
+		public void APIResponseReceived(string json)
+		{
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIResponseReceived(json);
 		}
 
 		/// <summary>
@@ -34,12 +54,16 @@ namespace Web.Code.Logic
 		/// <param name="requestDetails"></param>
 		public void APIRequestSent(RequestDetails requestDetails)
 		{
-			this.Connection.Clients.All.APIRequestSent(requestDetails);
+			this.Connection.Clients.Group(GetCurrentAPIRequestGroupName()).APIRequestSent(requestDetails);
 		}
 
-		public void APIResponseReceived(string json)
+		/// <summary>
+		/// Formats the unique 
+		/// </summary>
+		/// <returns></returns>
+		public string GetCurrentAPIRequestGroupName()
 		{
-			this.Connection.Clients.All.APIResponseReceived(json);
+			return MessageBroadcasterGroupTypes.APIRequestsForUser.ToString() + "_" + new WebUser().PersonID.GetValueOrDefault(Guid.Empty).ToString();
 		}
 	}
 }

@@ -75,6 +75,7 @@ namespace Web.Controllers
 		public ActionResult APILogViewer()
 		{
 			var model = new APILogViewerModel();
+			model.CurrentUserID = CurrentUser.PersonID;
 			return PartialView("home/apilogviewer", model);
 		}
 

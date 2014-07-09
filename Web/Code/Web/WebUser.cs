@@ -47,13 +47,20 @@ namespace Web.Code.Web
 				// Check in-memory first
 				if (_PersonID.HasValue) return _PersonID.Value;
 
-				// Stored in Forms Authentication cookie
-				if (HttpContext.Current == null || string.IsNullOrWhiteSpace(HttpContext.Current.User.Identity.Name)) return null;
-				return Guid.Parse(HttpContext.Current.User.Identity.Name);
+				// Create in session automatically for this demo site
+				var sessionVal = HttpContext.Current.Session["personid"];
+				if (sessionVal == null)
+				{
+					sessionVal = Guid.NewGuid();
+					this.PersonID = (Guid)sessionVal;
+				}
+				return (Guid) sessionVal;
+
 			}
 			private set
 			{
 				_PersonID = value;
+				HttpContext.Current.Session["personid"] = value;
 			}
 		}
 

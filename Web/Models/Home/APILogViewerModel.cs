@@ -8,6 +8,6 @@ namespace Web.Models.Home
 {
 	public class APILogViewerModel : BaseModel
 	{
-		
+		public Guid? CurrentUserID = Guid.Empty;
 	}
 }
