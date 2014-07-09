@@ -5,23 +5,36 @@
 	ViewBag.Title = "Add products to your cart";
 }
 
-<div id="@Model.UniqueID">
-	
-	<h1 class="step"><span>1</span>Please select a merchant</h1>
-	<fieldset class=" half-width">
-		<dl>
-			<dt>Merchant
-			<a class="icon refresh loadable" id="BtnRefreshMerchants">Refresh merchant list</a>
-			</dt>
-			<dd>
-				<select id="MerchantList"></select>
+<div id="@Model.UniqueID" class="browse-products-con">
+	<div class="intro">
+	<h1>Welcome to the Pushpay API Example Site</h1>
+		<p>
+			This site is designed to demonstrate how our Pushpay API can be used to process payments directly from your own website. Just add some products
+			to your shopping cart below then proceed to the checkout page.
+		</p>
+		<p>
+			<strong>Are you a developer? </strong> We have a special treat - use the <a class="toggle-developer-mode">Developer Console</a> to get a real-time view of how we're connecting
+to the Pushpay API.
+		</p>
+	</div>
+	@if (Model.CurrentMerchant == null)
+	{
+		<h1 class="step"><span>1</span>Please select a merchant</h1>
+		<fieldset class=" half-width">
+			<dl>
+				<dt>Merchant
+					<a class="icon refresh loadable" id="BtnRefreshMerchants">Refresh merchant list</a>
+				</dt>
+				<dd>
+					<select id="MerchantList"></select>
 				
-			</dd>
-		</dl>
-	</fieldset>
-	
+				</dd>
+			</dl>
+		</fieldset>
+	}
+
 	<div id="PHProducts" style="display:none;">
-	<h1 class="step"><span>2</span>What would you like to buy?</h1>
+	<h2>Please add items to your cart below...</h2>
 
 		<div class="product-list-con">
 			@foreach (var product in Model.Products)
@@ -98,13 +111,14 @@
 
 				BindTotals();
 				BindMerchants();
+				OnMerchantSelected();
 			},
 			/*
 			OnMerchantSelected
 			Fires when the user chooses a different merchant
 			*/
 			OnMerchantSelected = function() {
-				var hasMerchant = ($con.find('#MerchantList').val() != '');
+				var hasMerchant = (model.CurrentMerchant != null) || ($con.find('#MerchantList').val() != '');
 				var $PHProducts = $con.find('#PHProducts');
 				if (hasMerchant) {
 					$PHProducts.slideDown();
@@ -131,8 +145,12 @@
 			SaveOrder = function() {
 				var params = {
 					products: '',
-					merchantID: $con.find('#MerchantList').val()
+					merchantID: ''
 				};
+				
+				// If the model is forcing a merchant, we choose that, otherwise let the user decide
+				if (model.CurrentMerchant != null) params.merchantID = model.CurrentMerchant.Id;
+				else params.merchantID = $con.find('#MerchantList').val();
 				
 				// Products we just loosely concatenate so we can send it all up in one GET request
 				$con.find('.product-item-con').each(function() {
@@ -147,12 +165,14 @@
 				});
 
 				Lib.CallJSON('home/saveorder', params, function(paymentResponse) {
-					$con.find('#BtnPay').addClass(' redirecting').val('Redirecting to your secure payment site');
 					
 					// Redirect to the secure URL
 					console.log("payment", paymentResponse);
 					var url = paymentResponse.PaymentUrl;
-					// document.location = url;
+					if (url != undefined) {
+						$con.find('#BtnPay').addClass(' redirecting').val('Redirecting to your secure payment site');
+						document.location = url;	
+					}
 				});
 			},
 			/*

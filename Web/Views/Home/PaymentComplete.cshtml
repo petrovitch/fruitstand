@@ -1,0 +1,24 @@
+﻿@using Web.Code.Common.Extensions
+@model Web.Models.Home.PaymentCompleteModel
+@{
+    Layout = "~/views/shared/_website.cshtml";
+	ViewBag.Title = (Model.IsError ? "Payment failed" : "Payment complete");
+}
+
+<div id="@Model.UniqueID">
+	<h1>@(Model.IsError ? "Payment failed" : "Payment complete")</h1>
+	@if (Model.IsError)
+	{
+		<p>@Model.ErrorMessage</p>
+	}
+	else
+	{
+		<p>Thank you, your purchase has been made and your payment details are below</p>
+		<fieldset class="horiz">
+			<dl>
+				<dt>Purchase</dt>
+				<dd>@Model.PaymentInfo.DescriptionTitle<br/>@Model.PaymentInfo.Description</dd>
+			</dl>
+		</fieldset>
+	}
+</div>

@@ -98,7 +98,9 @@ a:visited {
 .container {
 	margin-left:auto;
 	margin-right:auto;
-	width: @containerWidth;
+	max-width: @containerWidth;
+
+
 }
 
 .container-full-width-header {
@@ -796,169 +798,176 @@ span.icon {
 	}
 }
 
-.product-list-con {
-	.clearfix();
-
-	&.has-product {
-		.totals-con {
-			.totals-inner-con {
-				margin-right: @gutter;
-				.opacity(1);
-			}
-		}
+.browse-products-con {
+	font-size:@smallFont;
+	.intro {
+		background-color: rgba(255,255,255,200);
+		padding:@gutter;
+		margin-bottom:@gutter;
 	}
 
-	.totals-con {
+	.product-list-con {
 		.clearfix();
-		overflow: hidden;
 
-		.buttons {
-			input {
-				width: 100%;
-				.borderbox();
-			}
-		}
-
-		.totals-inner-con {
-			.transition();
-			float: right;
-			.opacity(0);
-			// We hide the total until we have product
-			margin-right: -280px;
-
-			#BtnPay {
-				float:right;
-				margin-right:0px;
-				width: 270px; // Wide enough to hold redirection message later
-
-				&.redirecting {
-					background-image: url(i/loading.gif);
-					font-size: @smallFont;
-					background-position: center center;
-					background-repeat: no-repeat;
+		&.has-product {
+			.totals-con {
+				.totals-inner-con {
+					margin-right: @gutter;
+					.opacity(1);
 				}
 			}
 		}
 
-		.total-item {
-			@lineHeight: 40px;
+		.totals-con {
 			.clearfix();
-			display: block;
-			font-size: larger;
+			overflow: hidden;
 
-			&.tax {
-				font-style: italic;
+			.buttons {
+				input {
+					width: 100%;
+					.borderbox();
+				}
 			}
 
-			&.grand-total {
-				font-weight: bold;
+			.totals-inner-con {
+				.transition();
+				float: right;
+				.opacity(0);
+				// We hide the total until we have product
+				margin-right: -280px;
+
+				#BtnPay {
+					float: right;
+					margin-right: 0px;
+					width: 270px; // Wide enough to hold redirection message later
+					&.redirecting {
+						background-image: url(i/loading.gif);
+						font-size: @smallFont;
+						background-position: center center;
+						background-repeat: no-repeat;
+					}
+				}
+			}
+
+			.total-item {
+				@lineHeight: 40px;
+				.clearfix();
+				display: block;
+				font-size: larger;
+
+				&.tax {
+					font-style: italic;
+				}
+
+				&.grand-total {
+					font-weight: bold;
+
+					h4 {
+						font-weight: bold;
+					}
+				}
 
 				h4 {
+					line-height: @lineHeight;
+					float: left;
+					width: 220px;
+					text-align: right;
+					padding: 0px;
+					margin: 0px;
+					font-weight: normal;
+				}
+
+				span {
+					line-height: @lineHeight;
+					display: block;
+					float: left;
+					width: 100px;
+					text-align: right;
+
+					&:before {
+						content: '$';
+					}
+				}
+			}
+		}
+
+		.product-item-con {
+			@imageWidth: 70px;
+
+			.clearfix();
+			padding: @gutter;
+			border-bottom: 1px dashed @brandColor;
+
+			.img-con {
+				float: left;
+				.border-radius(400px, 400px, 400px,400px);
+				width: @imageWidth;
+				height: @imageWidth;
+				overflow: hidden;
+				background-color: #fff;
+
+				img {
+					.vertical-center();
+					width: 100%;
+				}
+			}
+
+			.details-con {
+				margin-left: @imageWidth + @gutter;
+
+				.name {
 					font-weight: bold;
 				}
-			}
 
-			h4 {
-				line-height: @lineHeight;
-				float: left;
-				width: 220px;
-				text-align: right;
-				padding: 0px;
-				margin: 0px;
-				font-weight: normal;
-			}
-
-			span {
-				line-height: @lineHeight;
-				display: block;
-				float: left;
-				width: 100px;
-				text-align: right;
-
-				&:before {
-					content: '$';
+				.desc {
 				}
 			}
-		}
-	}
 
-	.product-item-con {
-		@imageWidth: 70px;
-
-		.clearfix();
-		padding: @gutter;
-		border-bottom: 1px dashed @brandColor;
-
-		.img-con {
-			float: left;
-			.border-radius(400px, 400px, 400px,400px);
-			width: @imageWidth;
-			height: @imageWidth;
-			overflow: hidden;
-			background-color: #fff;
-
-			img {
-				.vertical-center();
-				width: 100%;
-			}
-		}
-
-		.details-con {
-			margin-left: @imageWidth + @gutter;
-
-			.name {
-				font-weight: bold;
-			}
-
-			.desc {
-			}
-		}
-
-		.actions-con {
-			@lineHeight: 40px;
-			float: right;
-			margin-left: @gutter;
-			width: 100px;
-
-			#TxtQuantity {
-				height: @lineHeight;
-				.borderbox();
-				width: 70px;
+			.actions-con {
+				@lineHeight: 40px;
 				float: right;
-				text-align: right;
-				display: block;
-				font-size: larger;
-			}
+				margin-left: @gutter;
+				width: 100px;
 
-			span {
-				line-height: @lineHeight;
-				font-size: larger;
-				display: block;
-				width: 100%;
-				text-align: right;
-
-				&#LblPrice {
-					font-weight: bold;
+				#TxtQuantity {
+					height: @lineHeight;
+					.borderbox();
+					width: 70px;
+					float: right;
+					text-align: right;
+					display: block;
+					font-size: larger;
 				}
 
-				&:before {
-					content: '$';
-				}
-			}
+				span {
+					line-height: @lineHeight;
+					font-size: larger;
+					display: block;
+					width: 100%;
+					text-align: right;
 
-			h4 {
-				text-align: right;
-				font-weight: normal;
-				margin: 0px;
-				padding: 0px;
-				text-transform: uppercase;
-				font-size: @smallFont;
-				display: block;
+					&#LblPrice {
+						font-weight: bold;
+					}
+
+					&:before {
+						content: '$';
+					}
+				}
+
+				h4 {
+					text-align: right;
+					font-weight: normal;
+					margin: 0px;
+					padding: 0px;
+					text-transform: uppercase;
+					font-size: @smallFont;
+					display: block;
+				}
 			}
 		}
 	}
 }
-
 body {
 	&.show-developer-console {
 
@@ -992,7 +1001,7 @@ body {
 		right: 0;
 		width: 100%;
 
-		.toggle-developer-mode, #BtnNewWindow {
+		.inline-only {
 			display: none;
 		}
 
@@ -1009,7 +1018,7 @@ body {
 
 
 	.toggle-developer-mode {
-		@buttonWidth: 70px;
+		@buttonWidth: 50px;
 		top: 20px;
 		text-indent: -9999px;
 		.borderbox();
@@ -1021,10 +1030,23 @@ body {
 		background-color: #fff;
 		.box-shadow();
 		font-size: @smallFont;
+		background-image: url(i/iconsheet.png);
+		background-position: 19px -2648px;
+		background-repeat: no-repeat;
 	}
 
 	.rpt-head {
-		margin-top: -53px; // Bring in to line with the .toggle button
+		margin-top: -43px; // Bring in to line with the .toggle button
+	}
+
+	.intro {
+		background-color: @bodyBackground;
+		padding: @gutter;
+		font-size: @smallFont;
+
+		p:last-child {
+			margin-bottom:0px;
+		}
 	}
 
 	.requests-con {
@@ -1035,6 +1057,10 @@ body {
 		.request-details-con {
 			padding: @gutter / 2;
 			border-top: 1px dashed #ccc;
+
+			&.error {
+				border: 1px @errorColor solid;
+			}
 
 			&:first-child {
 				border-top: 1px transparent solid;
@@ -1055,7 +1081,11 @@ body {
 			}
 
 			fieldset {
-				margin-bottom:0px;
+				margin-bottom: 0px;
+
+				dd {
+					word-wrap: break-word; // Long URLs
+				}
 			}
 		}
 	}

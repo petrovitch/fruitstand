@@ -198,6 +198,7 @@
     <Compile Include="Models\ErrorModel.cs" />
     <Compile Include="Models\Home\BrowseProductsModel.cs" />
     <Compile Include="Models\Home\APILogViewerModel.cs" />
+    <Compile Include="Models\Home\PaymentCompleteModel.cs" />
     <Compile Include="Models\Home\MerchantListModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -216,6 +217,7 @@
     <Content Include="Views\Shared\Home\APILogViewer.cshtml" />
     <Content Include="Views\Home\DeveloperConsole.cshtml" />
     <Content Include="Views\Shared\_Website.cshtml" />
+    <Content Include="Views\Home\PaymentComplete.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

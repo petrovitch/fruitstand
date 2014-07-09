@@ -3,16 +3,22 @@
 @using Web.Code.Common.Extensions
 <div id="@Model.UniqueID" class="log-viewer-con">
 
-	<div class="toggle-developer-mode">Show</div>	
+	<div class="toggle-developer-mode inline-only">Show</div>	
 	<div class="rpt-head">
 		<h2>Developer console</h2>
 
-		<a class="icon refresh" id="BtnNewWindow">New window</a>
+		<a class="icon refresh inline-only" id="BtnNewWindow">New window</a>
 	</div>
-	<p class="intro">
+	<div class="intro">
+	<p>
 		The developer console is designed to show developers exactly how we are using the Pushpay API, by showing all requests and responses between the two.
 		Just use the site as usual and keep an eye on the panel below.
 	</p>
+	<p class="inline-only">
+		<strong>Note: </strong>
+		We recommend you <a id="BtnNewWindow">open this in a new window</a> so you can view the logs between page loads.
+	</p>
+	</div>
 <div class="requests-con">
 	<div id="PHLogMessages"></div>
 </div>

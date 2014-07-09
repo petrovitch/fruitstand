@@ -13,6 +13,7 @@ namespace Web.Code.Contracts.Entities.ApiModels
 			Fields = new List<FieldConfigModel>();
 		}
 
+		[JsonProperty("_links")]
 		public Dictionary<string, Link> Links { get; set; }
 
 		/// <summary>
@@ -22,7 +23,7 @@ namespace Web.Code.Contracts.Entities.ApiModels
 		{
 			get
 			{
-				if (this.Links == null || this.Links.ContainsKey("pay")) return "";
+				if (this.Links == null || !this.Links.ContainsKey("pay")) return "";
 				return this.Links["pay"].Href;
 			}
 		}

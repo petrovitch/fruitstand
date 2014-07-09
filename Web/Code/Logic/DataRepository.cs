@@ -18,9 +18,9 @@ namespace Web.Code.Logic
 		public List<Product> GetProducts()
 		{
 			var result = new List<Product>();
-			result.Add(new Product() { ProductID = 1, Name = "Bananas", Description = "Our bananas have been quality certified by real monkey scientists.", UnitPrice = 10.5 });
-			result.Add(new Product() { ProductID = 2, Name = "Oranges", Description = "Oranges are great for Vitamin C. Available in any color as long as its orange.", UnitPrice = 13 });
-			result.Add(new Product() { ProductID = 3, Name = "Grapes", Description = "Often confused for oranges because they are the same shape, grapes are in fact smaller and a different color.", UnitPrice = 0.35 });
+			result.Add(new Product() { ProductID = 1, Name = "Kiwifruit", Description = "Cultivation of the fuzzy kiwifruit spread from China in the early 20th century to New Zealand where the first commercial plantings occurred. The fruit was called 'yang tao' but was changed to 'Chinese gooseberry' by the New Zealanders.", UnitPrice = 10.5 });
+			result.Add(new Product() { ProductID = 2, Name = "Feijoa", Description = "Feijoa is usually eaten by cutting it in half, then scooping out the pulp with a spoon. The fruit has a juicy, sweet seed pulp and slightly gritty flesh nearer the skin. If the utensils needed to eat it this way are not available, the feijoa may be torn or bitten in half, and the contents squeezed out and consumed.", UnitPrice = 13 });
+			result.Add(new Product() { ProductID = 3, Name = "Tamarillo", Description = "Tamarillo are egg shaped and about 4-10 centimeters long. Their color varies from yellow and orange to red and almost purple. Sometimes they have dark, longitudinal stripes. Red fruits are more acetous, yellow and orange fruits are sweeter. The flesh has a firm texture and contains more and larger seeds than a common tomato.", UnitPrice = 0.35 });
 			return result;
 		}
 	}

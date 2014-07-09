@@ -38,7 +38,25 @@ namespace Web.Controllers
 
 			// Now process and redirect to our URL
 			var paymentResponse = await cart.FinalizePayment(merchantID);
-			return Json(paymentResponse);
+			return Json(paymentResponse, JsonRequestBehavior.AllowGet);
+		}
+
+		/// <summary>
+		/// Called by the Pushpay API after a payment is made
+		/// </summary>
+		/// <param name="ap"></param>
+		/// <returns></returns>
+		public async Task<ActionResult> PaymentComplete(string ap)
+		{
+			var model = new PaymentCompleteModel();
+			model.PaymentInfo = await new PushpayConnection().GetPaymentInfo(ap);
+			if (model.PaymentInfo == null)
+			{
+				model.IsError = true;
+				model.ErrorMessage = "The payment token '" + ap + "' is no longer valid. Perhaps your purchase session timed out?";
+			}
+
+			return View(model);
 		}
 
 		/// <summary>
@@ -92,6 +110,11 @@ namespace Web.Controllers
 			var model = new BrowseProductsModel();
 			model.Products = new DataRepository().GetProducts();
 			model.TaxPercentage = Configuration.Current.TaxPercentage;
+
+			// Load current merchant
+			model.Merchants = await new PushpayConnection().GetMerchants("");
+			model.CurrentMerchant = model.Merchants.FirstOrDefault(x => x.Id == Configuration.Current.MerchantID);
+
 			return View(model);
 		}
 
@@ -101,7 +124,7 @@ namespace Web.Controllers
 		/// <returns></returns>
 		public ActionResult Index()
 		{
-			return RedirectToAction("Start", "Home");
+			return RedirectToAction("BrowseProducts", "Home");
 		}
 
 		/// <summary>

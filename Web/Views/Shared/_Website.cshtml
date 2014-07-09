@@ -21,13 +21,14 @@
 					<div class="nav main-nav">
 
 						<ul class="menu">
-							<li><a href="/">Home</a></li>
-							<li><a href="@Url.Action("BrowseProducts", "Home")">Shop</a></li>
+							<li><a href="@Url.Action("BrowseProducts", "Home")">Browse products</a></li>
 						</ul>	
 
 						<ul class="menu sub-menu">
 							<li>
-								<a class="icon person-details toggle-developer-mode">Developer Console</a>
+								<a href="@Configuration.Current.SourceCodeUrl" class="icon details">Download the source code</a>
+								<a href="@Configuration.Current.APIDocumentationUrl" class="icon details">API Documentation</a>
+								<a class="icon toggle-developer-mode">Developer Console</a>
 							</li>
 						</ul>	
 					</div>

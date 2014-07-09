@@ -132,11 +132,15 @@ namespace Web.Code.Common
 		#region Application Settings (usually stored in Web.config AppSettings)
 
 		public bool IsDeveloperMode { get { return GetBool("IsDeveloperMode"); } }
+		public int MerchantID { get { return GetInt("MerchantID"); } }
 		public string PushpayAPIBaseUrl { get { return GetString("PushpayAPIBaseUrl"); } }
 		public string PushpayClientID { get { return GetString("PushpayClientID"); } }
 		public string PushpayClientSecret { get { return GetString("PushpayClientSecret"); } }
 		public string OAuth2TokenEndpoint { get { return GetString("OAuth2TokenEndpoint"); } }
 		public string OAuth2AuthorizeEndpoint { get { return GetString("OAuth2AuthorizeEndpoint"); } }
+		public string APIDocumentationUrl { get { return GetString("APIDocumentationUrl"); } }
+		public string SourceCodeUrl { get { return GetString("SourceCodeUrl"); } }
+		
 		public int TaxPercentage { get { return GetInt("TaxPercentage"); } }
 
 		#endregion

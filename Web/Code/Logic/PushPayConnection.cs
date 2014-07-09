@@ -82,5 +82,17 @@ namespace Web.Code.Logic
 			var result = await client.Init("anticipatedpayments").SetMethod(RequestMethodTypes.POST).SetContent(paymentDetails).Execute<AnticipatedPaymentRepresentation>();
 			return result;
 		}
+
+		/// <summary>
+		/// Returns information about the requested payment
+		/// </summary>
+		/// <param name="anticipatedPaymentToken"></param>
+		/// <returns></returns>
+		public async Task<AnticipatedPaymentRepresentation> GetPaymentInfo(string anticipatedPaymentToken)
+		{
+			var client = await this.CreateClient();
+			var result = await client.Init("anticipatedpayment/" + anticipatedPaymentToken).SetMethod(RequestMethodTypes.GET).Execute<AnticipatedPaymentRepresentation>();
+			return result;
+		}
 	}
 }

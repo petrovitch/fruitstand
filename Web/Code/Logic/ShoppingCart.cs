@@ -71,7 +71,7 @@ namespace Web.Code.Logic
 			paymentDetails.Fields.Add(new FieldConfigModel
 				{
 					Key = "amount",
-					Value = this.GrandTotal.ToString(),
+					Value = this.GrandTotal.ToString("0.00"),
 					ReadOnly = true
 				});
 
