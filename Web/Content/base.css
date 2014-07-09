@@ -953,6 +953,7 @@ input[type=submit]:not(.secondary):hover {
   border-bottom-right-radius: 40px;
   border-bottom-left-radius: 40px;
   background-size: cover;
+  background-image: url(i/headerlogo.png);
   background-color: #b32b2f;
   background-repeat: no-repeat;
   background-position: center center;
