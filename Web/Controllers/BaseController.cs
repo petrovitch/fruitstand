@@ -1,45 +1,46 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
+using System.Collections.Generic;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using Contracts.Enums;
-using Contracts.Exceptions;
-using Web.Code.Common.Extensions;
+using Web.Code.Contracts.Enums;
+using Web.Code.Contracts.Exceptions;
 using Web.Code.Web;
 using Web.Models;
 
 namespace Web.Controllers
 {
-	public class BaseController : System.Web.Mvc.Controller
+	public class BaseController : Controller
 	{
-		private WebUser _CurrentUser = null;
+		private WebUser _currentUser;
+
 		protected WebUser CurrentUser
 		{
 			get
 			{
-				if (_CurrentUser == null) _CurrentUser = new WebUser();
-				return _CurrentUser;
+				if (_currentUser == null)
+				{
+					_currentUser = new WebUser();
+				}
+
+				return _currentUser;
 			}
 		}
 
 		/// <summary>
-		/// Global error handling
+		///     Global error handling
 		/// </summary>
 		/// <param name="filterContext"></param>
 		protected override void OnException(ExceptionContext filterContext)
 		{
 			// Format response according to the requested return type
 			var returnType = ReturnTypes.html;
-			var acceptType = (Request.Headers["accept"] ?? "").ToLower();
+			string acceptType = (Request.Headers["accept"] ?? "").ToLower();
 			if (acceptType.Contains("javascript")) returnType = ReturnTypes.json;
 
 			// Record
 			if (filterContext.Exception != null)
 			{
-
-				var myException = filterContext.Exception;
+				Exception myException = filterContext.Exception;
 				if (!(myException is UserException))
 				{
 					// TODO: Log error and return nice general error message instead, but for this example site, full error is shown
@@ -52,14 +53,14 @@ namespace Web.Controllers
 				var errorModel = new ErrorModel();
 				if (myException is UserExceptionCollection)
 				{
-					var exceptions = ((UserExceptionCollection)myException).Exceptions;
+					List<UserException> exceptions = ((UserExceptionCollection) myException).Exceptions;
 					exceptions.ForEach(x => errorModel.Exceptions.Add(x.Message));
 				}
 				else
 				{
 					errorModel.Exceptions.Add(myException.Message);
 				}
-				 
+
 				// If JSON, we can just fallback to the global ajax error handler written in client-side
 				switch (returnType)
 				{
@@ -88,9 +89,8 @@ namespace Web.Controllers
 							filterContext.Result = View("Home/Error", errorModel);
 						}
 						break;
-
 				}
-				
+
 				return;
 			}
 

@@ -1,5 +1,4 @@
-﻿
-namespace Web.Code.Contracts.Entities.ApiModels
+﻿namespace Web.Code.Contracts.Entities.ApiModels
 {
 	public class FieldConfigModel
 	{

@@ -1,33 +1,31 @@
 ﻿using System;
 using System.Web;
 using System.Web.Security;
-using Contracts.Cache;
+using Web.Code.Contracts.Cache;
 
 namespace Web.Code.Web
 {
-	public class WebUser 
+	public class WebUser
 	{
+		private Guid? _personId;
+		private IUserDataManager _dataManager;
 
-		private IUserDataManager _DataManager = null;
 		public IUserDataManager DataManager
 		{
 			get
 			{
-				if (_DataManager == null)
+				if (_dataManager == null)
 				{
-					_DataManager = new SessionStorage();
-					_DataManager.UniqueBaseKey = SessionID;
+					_dataManager = new SessionStorage();
+					_dataManager.UniqueBaseKey = SessionID;
 				}
-				return _DataManager;
+				return _dataManager;
 			}
 		}
 
 		private string SessionID
 		{
-			get
-			{
-				return "";
-			}
+			get { return ""; }
 		}
 
 		public bool IsAuthenticated
@@ -39,27 +37,25 @@ namespace Web.Code.Web
 			}
 		}
 
-		private Guid? _PersonID = null;
 		public Guid? PersonID
 		{
 			get
 			{
 				// Check in-memory first
-				if (_PersonID.HasValue) return _PersonID.Value;
+				if (_personId.HasValue) return _personId.Value;
 
 				// Create in session automatically for this demo site
-				var sessionVal = HttpContext.Current.Session["personid"];
+				object sessionVal = HttpContext.Current.Session["personid"];
 				if (sessionVal == null)
 				{
 					sessionVal = Guid.NewGuid();
-					this.PersonID = (Guid)sessionVal;
+					PersonID = (Guid) sessionVal;
 				}
 				return (Guid) sessionVal;
-
 			}
 			private set
 			{
-				_PersonID = value;
+				_personId = value;
 				HttpContext.Current.Session["personid"] = value;
 			}
 		}
@@ -67,7 +63,7 @@ namespace Web.Code.Web
 		#region Sign In / Out
 
 		/// <summary>
-		/// Adds this person to our forms authentication
+		///     Adds this person to our forms authentication
 		/// </summary>
 		/// <param name="personID"></param>
 		/// <returns></returns>
@@ -77,13 +73,13 @@ namespace Web.Code.Web
 			ClearCookies();
 
 			// Add here also so that subsequent calls in the same request can get the just-signed-in user
-			this._PersonID = personID;
+			_personId = personID;
 
 			FormsAuthentication.SetAuthCookie(personID.ToString(), true);
 		}
 
 		/// <summary>
-		/// Clear cookies
+		///     Clear cookies
 		/// </summary>
 		private void ClearCookies()
 		{
@@ -95,11 +91,11 @@ namespace Web.Code.Web
 			}
 
 			// Clear local variables
-			this.PersonID = null;
+			PersonID = null;
 		}
 
 		/// <summary>
-		/// Removes the person from the authentication system
+		///     Removes the person from the authentication system
 		/// </summary>
 		public void SignOut()
 		{
@@ -109,6 +105,5 @@ namespace Web.Code.Web
 		}
 
 		#endregion
-
 	}
 }

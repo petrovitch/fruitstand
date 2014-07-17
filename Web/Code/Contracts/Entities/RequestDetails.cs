@@ -1,87 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 
 namespace Web.Code.Contracts.Entities
 {
 	/// <summary>
-	/// Object containing information about an API request. Also used for message broadcasting
+	///     Object containing information about an API request. Also used for message broadcasting
 	/// </summary>
 	public class RequestDetails
 	{
-		public string Method = "GET";
 		public string BaseUrl = "";
+		public string Method = "GET";
 		public string RelativeUrl = "";
-		private Dictionary<string, object> Params { get; set; }
 		public string SerializedContent = "";
+		private Dictionary<string, object> Params { get; set; }
 
 		/// <summary>
-		/// Concatenates our base and relative URLs
+		///     Concatenates our base and relative URLs
 		/// </summary>
 		public string FullUrl
 		{
 			get
 			{
-				var s = BaseUrl + RelativeUrl;
-				if (!string.IsNullOrWhiteSpace(this.QueryString)) s += "?" + QueryString;
+				string s = BaseUrl + RelativeUrl;
+				if (!string.IsNullOrWhiteSpace(QueryString)) s += "?" + QueryString;
 				return s;
 			}
 		}
 
 		/// <summary>
-		/// Values required for our query string
+		///     Values required for our query string
 		/// </summary>
 		public Dictionary<string, object> QueryStringValues
 		{
 			get
 			{
-				if (this.Method == "GET" || this.Method == "DELETE") return Params;
+				if (Method == "GET" || Method == "DELETE") return Params;
 				return new Dictionary<string, object>();
 			}
 		}
 
 		/// <summary>
-		/// Formats our parameters into a query string appropriate for a URL
+		///     Formats our parameters into a query string appropriate for a URL
 		/// </summary>
 		public string QueryString
 		{
 			get
 			{
-				var queryParameters = HttpUtility.ParseQueryString("");
-				this.QueryStringValues.Where(x => x.Value != null && !string.IsNullOrWhiteSpace(x.Value.ToString())).ToList().ForEach(kvp => queryParameters[kvp.Key] = kvp.Value.ToString());
+				NameValueCollection queryParameters = HttpUtility.ParseQueryString("");
+				QueryStringValues.Where(x => x.Value != null && !string.IsNullOrWhiteSpace(x.Value.ToString())).ToList().ForEach(kvp => queryParameters[kvp.Key] = kvp.Value.ToString());
 				return queryParameters.ToString();
 			}
 		}
 
 		/// <summary>
-		/// Values required to be encoded into our form request body
+		///     Values required to be encoded into our form request body
 		/// </summary>
 		public Dictionary<string, object> FormValues
 		{
 			get
 			{
-				if (this.Method == "POST") return Params;
+				if (Method == "POST") return Params;
 				return new Dictionary<string, object>();
 			}
 		}
 
 		/// <summary>
-		/// Clears our parameter list
+		///     Clears our parameter list
 		/// </summary>
 		public void ClearParameters()
 		{
-			this.Params = new Dictionary<string, object>();
+			Params = new Dictionary<string, object>();
 		}
 
 		/// <summary>
-		/// Allows our users to set the private parameter source
+		///     Allows our users to set the private parameter source
 		/// </summary>
 		/// <param name="value"></param>
 		/// <param name="obj"></param>
 		public void SetParameter(string value, object obj)
 		{
-			this.Params[value] = obj;
+			Params[value] = obj;
 		}
 	}
 }

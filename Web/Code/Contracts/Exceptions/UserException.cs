@@ -1,6 +1,6 @@
 using System;
 
-namespace Contracts.Exceptions
+namespace Web.Code.Contracts.Exceptions
 {
 	public class UserException : Exception
 	{

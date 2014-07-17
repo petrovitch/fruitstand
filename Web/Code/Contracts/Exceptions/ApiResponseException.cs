@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Web;
 using Web.Code.Contracts.Entities.ApiModels;
 
 namespace Web.Code.Contracts.Exceptions
 {
 	public class ApiResponseException : Exception
 	{
-		public HttpStatusCode StatusCode { get; set; }
-		public string ReasonPhrase { get; set; }
-		public ErrorResponse Response { get; set; }
-
 		public ApiResponseException(HttpStatusCode statusCode, string reasonPhrase, ErrorResponse response)
 			: base(BuildMessage(statusCode, reasonPhrase, response))
 		{
@@ -21,6 +14,10 @@ namespace Web.Code.Contracts.Exceptions
 			ReasonPhrase = reasonPhrase;
 			Response = response;
 		}
+
+		public HttpStatusCode StatusCode { get; set; }
+		public string ReasonPhrase { get; set; }
+		public ErrorResponse Response { get; set; }
 
 		private static string BuildMessage(HttpStatusCode statusCode, string reasonPhrase, ErrorResponse response)
 		{

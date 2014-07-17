@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Web;
-using Contracts.Cache;
 using Web.Code.Contracts.Cache;
 
 namespace Web.Code.Web
@@ -10,12 +9,11 @@ namespace Web.Code.Web
 	/// <summary>
 	/// Stores and retrieves the given items in HttpContext session
 	/// </summary>
-	public class SessionStorage :IUserDataManager
+	public class SessionStorage : IUserDataManager
 	{
-
 		public string UniqueBaseKey { get; set; }
 
-		private Dictionary<string, string> CurrentValues = new Dictionary<string, string>();
+		private readonly Dictionary<string, string> _currentValues = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Records this item in state
@@ -41,11 +39,11 @@ namespace Web.Code.Web
 				// Save to memory as well for quick access later
 				if (value == null)
 				{
-					if (CurrentValues.ContainsKey(name)) CurrentValues.Remove(name);
+					if (_currentValues.ContainsKey(name)) _currentValues.Remove(name);
 				}
 				else
 				{
-					CurrentValues[name] = value.ToString();
+					_currentValues[name] = value.ToString();
 				}
 			}
 		}
@@ -70,7 +68,7 @@ namespace Web.Code.Web
 				}
 
 				// Already recorded in memory?
-				if (CurrentValues.ContainsKey(name)) return (T)Convert.ChangeType(CurrentValues[name], newType);
+				if (_currentValues.ContainsKey(name)) return (T)Convert.ChangeType(_currentValues[name], newType);
 
 				// Check session
 				if (HttpContext.Current != null && HttpContext.Current.Session != null)

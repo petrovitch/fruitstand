@@ -7,6 +7,4 @@ namespace Web.Code.Contracts.Cache
 		string CacheKey { get; set; }
 		List<string> Tags { get; set; }
 	}
-
-	
 }

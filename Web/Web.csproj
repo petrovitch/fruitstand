@@ -159,8 +159,7 @@
     <Compile Include="Code\Common\Configuration.cs" />
     <Compile Include="Code\Common\Extensions\RazorExtensions.cs" />
     <Compile Include="Code\Common\Extensions\ObjectExtensions.cs" />
-    <Compile Include="Code\Contracts\Cache\CacheRegions.cs" />
-    <Compile Include="Code\Contracts\Cache\CacheTags.cs" />
+    <Compile Include="Code\Common\VersionInfo.cs" />
     <Compile Include="Code\Contracts\Cache\ICachable.cs" />
     <Compile Include="Code\Contracts\Cache\IUserDataManager.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\AnticipatedPaymentRepresentation.cs" />

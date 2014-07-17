@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Mvc;
-using Contracts.Exceptions;
 using Web.Code;
 using Web.Code.Common;
 using Web.Code.Contracts.Entities.ApiModels;
+using Web.Code.Contracts.Exceptions;
 using Web.Code.Logic;
+using Web.Code.Web;
 using Web.Models.Home;
 
 namespace Web.Controllers
@@ -100,8 +101,7 @@ namespace Web.Controllers
 		/// <returns></returns>
 		public ActionResult APILogViewer()
 		{
-			var model = new APILogViewerModel();
-			model.CurrentUserID = CurrentUser.PersonID;
+			var model = new APILogViewerModel {CurrentUserID = CurrentUser.PersonID};
 			return PartialView("home/apilogviewer", model);
 		}
 

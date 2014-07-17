@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Newtonsoft.Json;
+﻿using System.Collections.Generic;
 
 namespace Web.Code.Contracts.Entities.ApiModels
 {
@@ -13,18 +9,15 @@ namespace Web.Code.Contracts.Entities.ApiModels
 			Fields = new List<FieldConfigModel>();
 		}
 
-		[JsonProperty("_links")]
-		public Dictionary<string, Link> Links { get; set; }
-
 		/// <summary>
-		/// Helper function to serialize this payment url from our link collection
+		///     Helper function to retrieve the payment url from our link collection, if it exists
 		/// </summary>
 		public string PaymentUrl
 		{
 			get
 			{
-				if (this.Links == null || !this.Links.ContainsKey("pay")) return "";
-				return this.Links["pay"].Href;
+				if (Links == null || !Links.ContainsKey("pay")) return "";
+				return Links["pay"].Href;
 			}
 		}
 

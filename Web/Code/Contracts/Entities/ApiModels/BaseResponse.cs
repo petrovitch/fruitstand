@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Web.Code.Contracts.Entities.ApiModels
 {
 	/// <summary>
-	/// Base class for our response methods, containing common properties
+	///     Base class for our response methods, containing common properties
 	/// </summary>
 	public abstract class BaseResponse
 	{
-		public string StatusCode = "";
+		[JsonProperty("_links")]
+		public Dictionary<string, Link> Links { get; set; }
 	}
 }

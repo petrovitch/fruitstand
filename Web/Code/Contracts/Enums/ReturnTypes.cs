@@ -1,4 +1,4 @@
-namespace Contracts.Enums
+namespace Web.Code.Contracts.Enums
 {
 	public enum ReturnTypes
 	{

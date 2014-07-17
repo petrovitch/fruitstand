@@ -1,4 +1,4 @@
-namespace Contracts.Exceptions
+namespace Web.Code.Contracts.Exceptions
 {
 	public class PermissionDeniedException : UserException
 	{

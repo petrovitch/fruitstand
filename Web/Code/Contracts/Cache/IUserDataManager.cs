@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Web.Code.Contracts.Cache;
-
-namespace Contracts.Cache
+﻿namespace Web.Code.Contracts.Cache
 {
 	public interface IUserDataManager
 	{
