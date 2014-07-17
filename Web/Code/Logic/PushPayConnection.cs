@@ -91,6 +91,20 @@ namespace Web.Code.Logic
 			return result;
 		}
 
+		/// <summary>
+		/// Returns the status of the anticipated payment
+		/// </summary>
+		/// <param name="anticipatedPaymentToken"></param>
+		/// <returns></returns>
+		public async Task<AnticipatedPaymentStatusRepresentation> GetPaymentStatus(string anticipatedPaymentToken)
+		{
+			var client = await this.CreateClient();
+			var result = await client.Init("anticipatedpayment/" + anticipatedPaymentToken + "/status", "Loading payment status information")
+				.SetMethod(RequestMethodTypes.GET)
+				.Execute<AnticipatedPaymentStatusRepresentation>();
+			return result;
+		}
+
 		public async Task<Merchant> GetMerchant(int merchantID)
 		{
 			var client = await this.CreateClient();

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Contracts.Exceptions;
 using Web.Code;
 using Web.Code.Common;
+using Web.Code.Contracts.Entities.ApiModels;
 using Web.Code.Logic;
 using Web.Models.Home;
 
@@ -15,7 +12,7 @@ namespace Web.Controllers
 	public class HomeController : BaseController
 	{
 		/// <summary>
-		/// Creates a basket and pushes a product request to Pushpay
+		///     Creates a basket and pushes a product request to Pushpay
 		/// </summary>
 		/// <param name="products"></param>
 		/// <returns></returns>
@@ -27,22 +24,22 @@ namespace Web.Controllers
 			var cart = new ShoppingCart();
 
 			// The products are just strung together like |product1=3|product2=6.7| etc etc
-			foreach (var productDesc in products.Split('|'))
+			foreach (string productDesc in products.Split('|'))
 			{
-				var parts = productDesc.Split('=');
+				string[] parts = productDesc.Split('=');
 				if (parts.Length != 2) continue;
-				var productID = int.Parse(parts[0]);
-				var quantity = double.Parse(parts[1]);
+				int productID = int.Parse(parts[0]);
+				double quantity = double.Parse(parts[1]);
 				cart.UpdateQuantity(productID, quantity);
 			}
 
 			// Now process and redirect to our URL
-			var paymentResponse = await cart.FinalizePayment(merchantID);
+			AnticipatedPaymentRepresentation paymentResponse = await cart.FinalizePayment(merchantID);
 			return Json(paymentResponse, JsonRequestBehavior.AllowGet);
 		}
 
 		/// <summary>
-		/// Called by the Pushpay API after a payment is made
+		///     Called by the Pushpay API after a payment is made
 		/// </summary>
 		/// <param name="ap"></param>
 		/// <returns></returns>
@@ -50,17 +47,45 @@ namespace Web.Controllers
 		{
 			var model = new PaymentCompleteModel();
 			model.PaymentInfo = await new PushpayConnection().GetPaymentInfo(ap);
+
 			if (model.PaymentInfo == null)
 			{
 				model.IsError = true;
 				model.ErrorMessage = "The payment token '" + ap + "' is no longer valid. Perhaps your purchase session timed out?";
 			}
 
+			model.StatusInfo = await new PushpayConnection().GetPaymentStatus(ap);
+
+			if (model.StatusInfo.Status == "UserCancelled" || model.StatusInfo.Status == "Unassociated")
+			{
+				// user cancelled paying or never started the payment process... redirect to the start
+				return RedirectToAction("Index");
+			}
+
+			if (model.StatusInfo.Status != "Complete")
+			{
+				model.IsError = true;
+				model.ErrorMessage = GetMessageForStatus(model.StatusInfo.Status);
+			}
+
 			return View(model);
 		}
 
+		private string GetMessageForStatus(string status)
+		{
+			switch (status)
+			{
+				case "Processing":
+					return "Payment has not yet been completed";
+				case "Failed":
+					return "Payment failed, order has been cancelled.";
+				default:
+					return string.Format("Unexpected payment status '{0}'", status);
+			}
+		}
+
 		/// <summary>
-		/// Opens the developer console in a separate VIEW
+		///     Opens the developer console in a separate VIEW
 		/// </summary>
 		/// <returns></returns>
 		public ActionResult DeveloperConsole()
@@ -69,7 +94,8 @@ namespace Web.Controllers
 		}
 
 		/// <summary>
-		/// Returns a view which shows the real-time messages that our API is sending/receiving. Designed to assist developers with understanding how the API works
+		///     Returns a view which shows the real-time messages that our API is sending/receiving. Designed to assist developers
+		///     with understanding how the API works
 		/// </summary>
 		/// <returns></returns>
 		public ActionResult APILogViewer()
@@ -80,19 +106,19 @@ namespace Web.Controllers
 		}
 
 		/// <summary>
-		/// Returns a link to the product stock image
+		///     Returns a link to the product stock image
 		/// </summary>
 		/// <param name="productID"></param>
 		/// <returns></returns>
 		public ActionResult ProductImage(int productID)
 		{
 			// Nothing fancy here, just redirect to hard-coded image files for this demo app
-			var path = new WebEnvironment().MapPath("~/content/i/products/" + productID + ".png");
+			string path = new WebEnvironment().MapPath("~/content/i/products/" + productID + ".png");
 			return File(path, "image/png");
 		}
 
 		/// <summary>
-		/// Returns our list of merchants
+		///     Returns our list of merchants
 		/// </summary>
 		/// <returns></returns>
 		public async Task<ActionResult> MerchantList()
@@ -103,7 +129,7 @@ namespace Web.Controllers
 		}
 
 		/// <summary>
-		/// Shows a page allowing the user to select products
+		///     Shows a page allowing the user to select products
 		/// </summary>
 		/// <returns></returns>
 		public async Task<ActionResult> BrowseProducts()
@@ -120,7 +146,7 @@ namespace Web.Controllers
 		}
 
 		/// <summary>
-		/// Entry point / home page into the application
+		///     Entry point / home page into the application
 		/// </summary>
 		/// <returns></returns>
 		public ActionResult Index()
@@ -129,7 +155,7 @@ namespace Web.Controllers
 		}
 
 		/// <summary>
-		/// A landing page where the user can get started with the API
+		///     A landing page where the user can get started with the API
 		/// </summary>
 		/// <returns></returns>
 		public ActionResult Start()

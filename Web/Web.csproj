@@ -164,6 +164,7 @@
     <Compile Include="Code\Contracts\Cache\ICachable.cs" />
     <Compile Include="Code\Contracts\Cache\IUserDataManager.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\AnticipatedPaymentRepresentation.cs" />
+    <Compile Include="Code\Contracts\Entities\ApiModels\AnticipatedPaymentStatusRepresentation.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\BaseResponse.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\EditAnticipatedPaymentModel.cs" />
     <Compile Include="Code\Contracts\Entities\ApiModels\ErrorResponse.cs" />
