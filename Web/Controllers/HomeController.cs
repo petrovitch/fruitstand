@@ -63,7 +63,7 @@ namespace Web.Controllers
 				return RedirectToAction("Index");
 			}
 
-			if (model.StatusInfo.Status != "Complete")
+			if (model.StatusInfo.Status != "Completed")
 			{
 				model.IsError = true;
 				model.ErrorMessage = GetMessageForStatus(model.StatusInfo.Status);
