@@ -61,3 +61,4 @@ ehthumbs.db
 #ignore nuget packages - we use package restore
 packages/
 */obj/**
+*.suo
