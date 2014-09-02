@@ -17,9 +17,9 @@ namespace Web.Controllers
 		/// </summary>
 		/// <param name="products"></param>
 		/// <returns></returns>
-		public async Task<ActionResult> SaveOrder(string products, string merchantID)
+		public async Task<ActionResult> SaveOrder(string products, string merchantKey)
 		{
-			if (string.IsNullOrWhiteSpace(merchantID)) throw new UserException("Please select a merchant");
+			if (string.IsNullOrWhiteSpace(merchantKey)) throw new UserException("Please select a merchant");
 
 			// Open our cart
 			var cart = new ShoppingCart();
@@ -35,7 +35,7 @@ namespace Web.Controllers
 			}
 
 			// Now process and redirect to our URL
-			AnticipatedPaymentRepresentation paymentResponse = await cart.FinalizePayment(merchantID);
+			AnticipatedPaymentRepresentation paymentResponse = await cart.FinalizePayment(merchantKey);
 			return Json(paymentResponse, JsonRequestBehavior.AllowGet);
 		}
 
@@ -140,7 +140,7 @@ namespace Web.Controllers
 
 			// Load current merchant
 			model.Merchants = await new PushpayConnection().GetMerchants("");
-			model.CurrentMerchant = await new PushpayConnection().GetMerchant(Configuration.Current.MerchantID);
+			model.CurrentMerchant = await new PushpayConnection().GetMerchant(Configuration.Current.MerchantKey);
 
 			return View(model);
 		}

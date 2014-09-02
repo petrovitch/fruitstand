@@ -12,7 +12,7 @@ namespace Web.Code.Contracts.Entities.ApiModels
 		public string Description { get; set; }
 		public string DescriptionTitle { get; set; }
 		public List<FieldConfigModel> Fields { get; set; }
-		public string Merchant { get; set; }
+		public string MerchantKey { get; set; }
 		public PayerDetails Payer { get; set; }
 		public string Reference { get; set; }
 		public string ReturnTitle { get; set; }

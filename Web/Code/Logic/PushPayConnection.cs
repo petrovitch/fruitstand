@@ -100,10 +100,10 @@ namespace Web.Code.Logic
 			return result;
 		}
 
-		public async Task<Merchant> GetMerchant(int merchantID)
+		public async Task<Merchant> GetMerchant(string merchantKey)
 		{
 			ApiClient client = await CreateClient();
-			Merchant result = await client.Init("merchant/" + merchantID, "Loading merchant details").SetMethod(RequestMethodTypes.GET).Execute<Merchant>();
+			Merchant result = await client.Init("merchant/" + merchantKey, "Loading merchant details").SetMethod(RequestMethodTypes.GET).Execute<Merchant>();
 			return result;
 		}
 	}

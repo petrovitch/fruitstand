@@ -82,7 +82,7 @@ namespace Web.Code.Logic
 		///     Calculates the payment info via Pushpay, then redirects the user to the secure URL where they can enter their
 		///     payment details
 		/// </summary>
-		public async Task<AnticipatedPaymentRepresentation> FinalizePayment(string merchantID)
+		public async Task<AnticipatedPaymentRepresentation> FinalizePayment(string merchantKey)
 		{
 			// Create a model for PP
 			var paymentDetails = new EditAnticipatedPaymentModel();
@@ -99,7 +99,7 @@ namespace Web.Code.Logic
 			// Other info
 			paymentDetails.Description = GetBasketContentsDescription();
 			paymentDetails.DescriptionTitle = "Fruit purchase";
-			paymentDetails.Merchant = merchantID;
+			paymentDetails.MerchantKey = merchantKey;
 			paymentDetails.Reference = Guid.NewGuid().ToString(); // Would typically be your own invoice/reference number according to your e-commerce shopping cart
 			paymentDetails.ReturnTitle = "Return to the example site";
 			paymentDetails.ReturnUrl = new WebEnvironment().GetFullUrl("home/paymentcomplete", true);

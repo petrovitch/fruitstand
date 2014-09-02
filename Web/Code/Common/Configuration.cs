@@ -17,9 +17,9 @@ namespace Web.Code.Common
 			get { return GetBool("IsDeveloperMode"); }
 		}
 
-		public int MerchantID
+		public string MerchantKey
 		{
-			get { return GetInt("MerchantID"); }
+			get { return GetString("MerchantKey"); }
 		}
 
 		public string PushpayAPIBaseUrl

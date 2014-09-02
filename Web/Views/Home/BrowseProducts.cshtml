@@ -153,12 +153,12 @@
 			SaveOrder = function() {
 				var params = {
 					products: '',
-					merchantID: ''
+					merchantKey: ''
 				};
 				
 				// If the model is forcing a merchant, we choose that, otherwise let the user decide
-				if (model.CurrentMerchant != null) params.merchantID = model.CurrentMerchant.Id;
-				else params.merchantID = $con.find('#MerchantList').val();
+				if (model.CurrentMerchant != null) params.merchantKey = model.CurrentMerchant.Key;
+				else params.merchantKey = $con.find('#MerchantList').val();
 				
 				// Products we just loosely concatenate so we can send it all up in one GET request
 				$con.find('.product-item-con').each(function() {
