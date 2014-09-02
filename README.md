@@ -29,7 +29,7 @@ With those details at hand you must open the web.config file and update the foll
 		<add key="PushpayClientSecret" value="enter-client-secret-here" />
 		<add key="OAuth2AuthorizeEndpoint" value="https://qa-auth.testpushpay.com/pushpay/oauth/authorize" />
 		<add key="OAuth2TokenEndpoint" value="https://qa-auth.testpushpay.com/pushpay/oauth/token" />
-		<add key="MerchantID" value="203328"/>
+		<add key="MerchantKey" value="ABCyMzp3NWFCNDlSRGNub0tvUkpBbnpBVnh1Y0FOXYZ"/>
 		
 		<add key="TaxPercentage" value="15"/>
 		<add key="APIDocumentationUrl" value="https://qa-pushpayio.testpushpay.com/docs"/>
